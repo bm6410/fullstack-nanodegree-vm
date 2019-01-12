@@ -1,0 +1,19 @@
+<html>
+<head>
+	<!-- <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}"> -->
+	</head>
+
+	<body>
+	<div class = 'pane'>
+		<div class = 'header'>
+		<h1>New Poster</h1>
+	</div>
+
+<form action="{{url_for('addNewPoster')}}" method = 'post'>
+
+  <input type ='text' size='30' name='name'>
+	<input type='submit' value='Create'>
+  <a href="{{url_for('showHomePage')}}">Cancel</a>
+
+	</body>
+</html>
