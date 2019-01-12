@@ -17,28 +17,28 @@ def addNewPoster():
 #@auth.login_required
 @app.route('/<int:poster_id>/edit')
 def editPoster(poster_id):
-    return 'Edit poster with ID ' + str(poster_id) + ' here'
+    return render_template('editPoster.html')
 
 #delete poster page, protected behind login
 #@auth.login_required
 @app.route('/<int:poster_id>/delete')
 def deletePoster(poster_id):
-    return 'Delete poster with ID ' + str(poster_id) + ' here'
+    return render_template('deletePoster.html')
 
 # info for a poster
 @app.route('/<int:poster_id>')
 def showPosterInfo(poster_id):
-    return 'Show info for poster with ID ' + str(poster_id) + ' here'
+    return render_template('posterinfo.html')
 
 # all the posters in a category
 @app.route('/category/<int:category_id>')
 def showPostersForCategory(category_id):
-    return 'Show all the posters category with ID ' + str(category_id) + ' here'
+    return render_template('category.html')
 
 # login page
 @app.route('/login')
 def login():
-    return 'Login user here'
+    return render_template('login.html')
 
 if __name__  == '__main__':
     app.debug = True
