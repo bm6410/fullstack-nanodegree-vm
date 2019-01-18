@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Years{% endblock %}
+{% block content %}
+
+	<div class = 'pane'>
+		<div class = 'header'>
+		<h1>Directors</h1>
+	</div>
+
+<form action="#" method = 'post'>
+	<h2>Just showing directors!</h2>
+<br>
+	{% for director in directors %}
+		<a href="{{ url_for('showSearchResults', category='director', id = director.id)}}">{{director.name}}</a> <br>
+	{% endfor %}
+
+  <a href="{{url_for('showHomePage')}}">Cancel</a>
+
+
+{% endblock %}

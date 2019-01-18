@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}Search Results{% endblock %}
+{% block content %}
+
+	<div class = 'pane'>
+		<div class = 'header'>
+		<h1>Search Results</h1>
+	</div>
+
+<form action="#" method = 'post'>
+	<h2>Just showing the search results!</h2>
+<br>
+	{% for poster in posters %}
+		<a href="{{url_for('showPosterInfo', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a> <br>
+	{% endfor %}
+
+  <a href="{{url_for('showHomePage')}}">Cancel</a>
+
+{% endblock %}

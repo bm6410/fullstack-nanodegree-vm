@@ -1,0 +1,99 @@
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy import create_engine
+from passlib.apps import custom_app_context as pwd_context
+import random, string
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
+from itsdangerous import(TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+
+# Base = declarative_base()
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posters.db'
+db = SQLAlchemy(app)
+
+#You will use this secret key to create and verify your tokens
+# secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+#
+# class User(db.Model):
+#     __tablename__ = 'user'
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(32), index=True)
+#     password_hash = db.Column(db.String(64))
+#
+#     def hash_password(self, password):
+#         self.password_hash = pwd_context.encrypt(password)
+#
+#     def verify_password(self, password):
+#         return pwd_context.verify(password, self.password_hash)
+#     #Add a method to generate auth tokens here
+#     def generate_auth_token(self, expiration=600):
+#         s = Serializer(secret_key, expires_in = expiration)
+#         return s.dumps({'id': self.id})
+#
+#     #Add a method to verify auth tokens here
+#     @staticmethod
+#     def verify_auth_token(token):
+#         s = Serializer(secret_key)
+#         try:
+#             data = s.loads(token)
+#         except SignatureExpired:
+#             #Valid token, but expired
+#             return None
+#         except BadSignature:
+#             #Invalid token
+#             return None
+#         user_id = data['id']
+#         return user_id
+
+class Director(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
+class Genre(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
+class Poster(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String)
+    genre_id = db.Column(db.Integer, ForeignKey("genre.id"))
+    genre = relationship(Genre)
+    director_id = db.Column(db.Integer, ForeignKey("director.id"))
+    director = relationship(Director)
+    year = db.Column(db.String)
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'id': self.id,
+            'title' : self.title,
+            'genre_id' : self.genre_id,
+            'genre' : self.genre.name,
+            'director_id' : self.director_id,
+            'director' : self.director.name,
+            'year' : self.year
+            }
+
+db.create_all()
+
+# engine = create_engine('sqlite:///posters.db')
+# Base.metadata.create_all(engine)

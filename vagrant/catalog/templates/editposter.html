@@ -1,18 +1,36 @@
-<html>
-<head>
-	<!-- <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}"> -->
-	</head>
+{% extends "layout.html" %}
 
-	<body>
+{% block title %}Edit a Poster{% endblock %}
+{% block content %}
+
 	<div class = 'pane'>
 		<div class = 'header'>
 		<h1>Edit Poster</h1>
 	</div>
 
-<form action="#" method = 'post'>
-  <input type ='text' size='30' name='name' placeholder='sandwich'>
-	<input type='submit' value='Edit'>
-  <a href="{{url_for('showHomePage')}}">Cancel</a>
+<form action="{{url_for('editPoster', poster_id = posterObj.id)}}" method = 'post'>
+	<h2>Edit item number {{posterObj.id}}</h2>
+	Title:
+  <input type ='text' size='30' name='title' value='{{posterObj.title}}'>
+	<br>
+	Release Date:
+	<input type ='text' size='4' name='year' value='{{posterObj.year}}'>
+	<br>
+	Director:
+	<input type ='text' size='30' name='director' value='{{posterObj.director.name}}'>
+	<br>
+	<div class = 'genres'>
+		<span class = 'name'><p>Genre</p></span>
+			<select name='genre'>
+				{% for genre in genres %}
+					{% if genre.id == posterObj.genre_id %}
+						<option selected value={{genre.id}}>{{genre.name}}</option>
+					{% else %}
+						<option value={{genre.id}}>{{genre.name}}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+	</div>
+	<a href='{{url_for('showHomePage')}}'>Cancel</a><input type='submit' value='Update Poster'>
 
-	</body>
-</html>
+{% endblock %}

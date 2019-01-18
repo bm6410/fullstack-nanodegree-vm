@@ -1,26 +1,23 @@
-<html>
-<head>
-	<!-- <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}"> -->
-	</head>
+{% extends "layout.html" %}
 
-	<body>
-	<div class = 'pane'>
-		<div class = 'header'>
-		<h1>Posters</h1>
-	</div>
+{% block title %}Stick and Burn{% endblock %}
+{% block content %}
 
-	<h2>We will display cool stuff here at some point</h2>
 
-		<!-- {% for restaurant in restaurants %} -->
-    <div class = 'restaurants'>
-		    <span class = 'name'><p>{{restaurant.name}}</p></span>
-        <!-- <a href="{{url_for('editPoster', restaurant_id=restaurant.id)}}">Edit</a></br>
-        <a href="{{url_for('deletePoster', restaurant_id=restaurant.id)}}">Delete</a> -->
-	  </div>
+    <h2>Welcome to Stick and Burn!</h2>
+		<!-- Add the definition of "stick and burn" here -->
 
-		<!-- {% endfor %} -->
+		<!-- Example split danger button -->
+		<div class="btn-group">
+		  <button type="button" class="btn btn-danger">Browse Posters by:</button>
+		  <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    <span class="sr-only">Toggle Dropdown</span>
+		  </button>
+		  <div class="dropdown-menu">
+		    <a class="dropdown-item" href="{{url_for('showYears')}}">Year</a>
+		    <a class="dropdown-item" href="{{url_for('showGenres')}}">Genre</a>
+		    <a class="dropdown-item" href="{{url_for('showDirectors')}}">Director</a>
+		  </div>
+		</div>
 
-</div>
-</div>
-	</body>
-</html>
+{% endblock %}
