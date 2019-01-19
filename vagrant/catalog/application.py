@@ -1,19 +1,24 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, jsonify
 from dbmodel import db, app, Poster, Director, Genre
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 import random, string
+import os
+from werkzeug.utils import secure_filename
 
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/img')
 
 app = Flask(__name__)
 app.debug = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posters.db'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db.init_app(app)
 
 # let's just get the genres one time and use them everywhere
 genres = db.session.query(Genre).all()
-
 
 # home page
 @app.route('/')
@@ -24,6 +29,11 @@ def showHomePage():
 @app.route('/new', methods=['GET', 'POST'])
 #@auth.login_required
 def addNewPoster():
+
+    # if we don't already have this folder to upload files to, create it
+    if not (os.path.isdir(app.config['UPLOAD_FOLDER'])):
+        os.mkdir(app.config['UPLOAD_FOLDER'])
+
     if request.method == 'POST':
         # if the director doesn't already exist, add to the db, then get the id
         director_name = request.form['director']
@@ -34,11 +44,31 @@ def addNewPoster():
             db.session.commit()
             directorObj = newDirector
 
+        # upload the file ------------------------------------------------------
+        # check if the post request has the file part
+        if 'poster_img' not in request.files:
+            flash('No file part')
+            return "There is no file part here in the form"
+
+        file = request.files['poster_img']
+
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return "There is no file name here"
+
+        upload_file(file)
+
+        #-----------------------------------------------------------------------
+
         # create the poster and add it to the db
         newPoster = Poster(title = request.form['title'],
             genre_id = request.form['genre'],
             director_id = directorObj.id,
-            year = request.form['year'])
+            year = request.form['year'],
+            poster_img = file.filename)
+
         db.session.add(newPoster)
         db.session.commit()
         return redirect(url_for('showPosterInfo', poster_id = newPoster.id))
@@ -69,6 +99,32 @@ def editPoster(poster_id):
                 directorObj = newDirector
 
             posterObj.director_id = directorObj.id
+
+            # if the form thingy isn't blank and is different than what we had
+            # before, let's delete what is there and upload the new one
+
+            # upload the file ------------------------------------------------------
+            # check if the post request has the file part
+            if 'poster_img' not in request.files:
+                flash('No file part')
+                return "There is no file part here in the form"
+
+            file = request.files['poster_img']
+#            if posterObj.poster_img is not file.filename:
+                # we have a new file
+
+            # if user does not select file, browser also
+            # submit an empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                return "There is no file name here"
+
+            upload_file(file)
+
+            #-----------------------------------------------------------------------
+            #os.remove(os.path.join(app.config['UPLOAD_FOLDER'], posterObj.poster_img))
+            posterObj.poster_img = file.filename
+
             db.session.commit()
             return redirect(url_for('showPosterInfo', poster_id = posterObj.id))
 
@@ -85,9 +141,18 @@ def deletePoster(poster_id):
         if posterObj is None:
             return "Something didn't work"
         else:
+            director_id = posterObj.director_id
             db.session.delete(posterObj)
             db.session.commit()
-            print "We deleted that poster"
+
+            # if that is the last film for the particular director we just
+            # deleted, let's delete the director, too
+            posterByDirector = Poster.query.filter_by(director_id = director_id).first()
+            if not posterByDirector:
+                directorObj = Director.query.filter_by(id = director_id).first()
+                db.session.delete(directorObj)
+                db.session.commit()
+
             return render_template("index.html", genres = genres)
     else:
         return render_template('deletePoster.html', poster_id = poster_id)
@@ -139,7 +204,7 @@ def showGenresJSON():
 # show page with genres
 @app.route('/category/director')
 def showDirectors():
-    directors = Director.query.all()
+    directors = Director.query.order_by(Director.name)
     return render_template('directors.html', directors = directors)
 
 @app.route('/category/director/JSON')
@@ -167,6 +232,19 @@ def showPostersForCategory(category_id):
 @app.route('/login')
 def login():
     return render_template('login.html')
+
+# utility functions ---------
+
+# code borrowed from the Flask website
+def allowed_file(filename):
+    return '.' in filename and \
+       filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def upload_file(file):
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
 
 if __name__  == '__main__':
     app.config['SECRET_KEY'] = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
