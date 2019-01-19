@@ -8,16 +8,19 @@
 		<h1>Edit Poster</h1>
 	</div>
 
-<form action="{{url_for('editPoster', poster_id = posterObj.id)}}" method = 'post'>
+<form action="{{url_for('editPoster', poster_id = posterObj.id)}}" method = 'post' enctype=multipart/form-data>
 	<h2>Edit item number {{posterObj.id}}</h2>
 	Title:
-  <input type ='text' size='30' name='title' value='{{posterObj.title}}'>
+  <input type ='text' size='30' name='title' value='{{posterObj.title}}' required = true>
 	<br>
 	Release Date:
-	<input type ='text' size='4' name='year' value='{{posterObj.year}}'>
+	<input type ='text' size='4' name='year' value='{{posterObj.year}}' required = true>
 	<br>
 	Director:
-	<input type ='text' size='30' name='director' value='{{posterObj.director.name}}'>
+	<input type ='text' size='30' name='director' value='{{posterObj.director.name}}' required = true>
+	<br>
+	Image:
+	<input type ='file' size='30' name='poster_img' value='{{posterObj.poster_img}}'>
 	<br>
 	<div class = 'genres'>
 		<span class = 'name'><p>Genre</p></span>
