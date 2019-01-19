@@ -8,7 +8,7 @@
 		<h1>New Poster</h1>
 	</div>
 
-	<form action="#" method = 'post'>
+	<form action="{{url_for('addNewPoster')}}" method = 'post' enctype=multipart/form-data>
 		Title:
 	  <input type ='text' size='30' name='title' placeholder='sandwich'>
 		<br>
@@ -17,6 +17,9 @@
 		<br>
 		Director:
 		<input type ='text' size='30' name='director' placeholder=''>
+		<br>
+		Image:
+		<input type ='file' size='30' name='poster_img' accept="image/*">
 		<br>
 		<div class = 'genres'>
 			<span class = 'name'><p>Genre</p></span>
