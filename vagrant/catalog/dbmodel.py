@@ -79,6 +79,7 @@ class Poster(db.Model):
     director_id = db.Column(db.Integer, ForeignKey("director.id"))
     director = relationship(Director)
     year = db.Column(db.String)
+    poster_img = db.Column(db.String)
 
     @property
     def serialize(self):
@@ -90,7 +91,8 @@ class Poster(db.Model):
             'genre' : self.genre.name,
             'director_id' : self.director_id,
             'director' : self.director.name,
-            'year' : self.year
+            'year' : self.year,
+            'poster_img' : self.poster_img
             }
 
 db.create_all()
