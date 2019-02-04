@@ -3,18 +3,26 @@
 {% block title %}Genres{% endblock %}
 {% block content %}
 
-	<div class = 'pane'>
-		<div class = 'header'>
-		<h1>Genres</h1>
+	<div class="container">
+		<div class='row'>
+			<div class="col">
+				<h1>Genres</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<ul class="categoryList">
+					{% for genre in genres %}
+					<li><a href="{{ url_for('showSearchResults', category = 'genre', id = genre.id)}}">{{genre.name}}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<a href="{{url_for('showHomePage')}}" class="btn btn-outline-light my-2 my-sm-0">Go Back</a>
+			</div>
+		</div>
 	</div>
-
-<form action="#" method = 'post'>
-	<h2>Just showing genres!</h2>
-<br>
-	{% for genre in genres %}
-		<a href="{{ url_for('showSearchResults', category = 'genre', id = genre.id)}}">{{genre.name}}</a> <br>
-	{% endfor %}
-
-  <a href="{{url_for('showHomePage')}}">Cancel</a>
 
 {% endblock %}

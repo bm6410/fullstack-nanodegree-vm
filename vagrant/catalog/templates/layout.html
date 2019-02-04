@@ -2,55 +2,64 @@
 <html>
   <head>
     {% block head %}
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
     <title>{% block title %}{% endblock %}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     {% endblock %}
   </head>
   <body>
-    <nav class="navbar navbar-dark bg-primary">
-      <a class="navbar-brand" href="#">Stick and Burn</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="{{url_for('showHomePage')}}">Home <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('addNewPoster')}}">Add New Poster</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Browse Posters By:
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+
+  <!--TODO: somehow, make the menu stick to the top-->
+  <nav class="navbar navbar-expand-lg navbar-dark" id="navTest">
+    <a class="navbar-brand" href="{{url_for('showHomePage')}}">Stick and Burn</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!--TODO: align these menus to the right-->
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0 mx-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('addNewPoster')}}">Add New Poster</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Browse Posters by:</a>
+            <div class="dropdown-menu">
               <a class="dropdown-item" href="{{url_for('showYears')}}">Year</a>
               <a class="dropdown-item" href="{{url_for('showGenres')}}">Genre</a>
               <a class="dropdown-item" href="{{url_for('showDirectors')}}">Director</a>
             </div>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    <div id="content">{% block content %}{% endblock %}</div>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0" action={% if session['username'] %} "/logout" {% else %} "/clientOAuth" {% endif %}>
+        <button class="btn btn-outline-light my-2 my-sm-0" type="submit">{% if session['username'] %} Logout {% else %} Login {% endif %}</button>
+      </form>
+    </div>
+  </nav>
+
+    <div id="content" style="margin: 15px; padding: 10px;">{% block content %}{% endblock %}</div>
     <div id="footer">
-      {% block footer %}
-      &copy; Copyright 2010 by <a href="http://domain.invalid/">you</a>.
-      {% endblock %}
+      <!--{% block footer %}-->
+      <!--&copy; Copyright 2019 by <a href="http://stickandburn.com/">Stick and Burn</a>.-->
+      <!--{% endblock %}-->
     </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-
+    <script>
+      $('.js-nav').click(function(){
+          //$(this).parent().find('.menu').toggleClass('active');
+          $('.menu').toggleClass('active');
+      });
+    </script>
   </body>
 </html>

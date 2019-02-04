@@ -3,21 +3,57 @@
 {% block title %}Stick and Burn{% endblock %}
 {% block content %}
 
+<div id="page">
+	<div class="container-fluid" id="heroWrapper">
+		<div class="container" id="hero">
+			<div class="container">
+				<div class="row tagline">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+						<div class="row">
+							<div class="col">
+								<h1 class="hero-text">Welcome to Stick and Burn!</h1>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-4 text-nowrap">
+								<h2 id="herofooter">
+									<!--TODO: move this style to the css file-->
+									<a href="#" class="toggle-nav js-nav" id="herofooterclick" style="text-decoration: none;">Browse Posters By:
+										<!--TODO: Change the direction of the arrow when the menu opens/closes-->
+										<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+										  <g>
+											<path fill="#FFFFFF" d="M15.901,31.355c-8.503,0-15.421-6.918-15.421-15.42c0-8.503,6.918-15.421,15.421-15.421
+												s15.421,6.918,15.421,15.421C31.322,24.437,24.404,31.355,15.901,31.355L15.901,31.355z M15.901,1.514
+												C7.949,1.514,1.48,7.983,1.48,15.935s6.469,14.42,14.421,14.42c7.952,0,14.421-6.469,14.421-14.42S23.853,1.514,15.901,1.514
+												L15.901,1.514z"></path>
+										  </g>
+										  <polygon fill="#FFFFFF" points="10.182,15.341 19.12,15.341 15.182,11.403 16.12,10.341 21.62,15.903 21.62,16.403 16.182,21.529
+											15.182,20.466 19.12,16.403 10.182,16.403 "></polygon>
 
-    <h2>Welcome to Stick and Burn!</h2>
-		<!-- Add the definition of "stick and burn" here -->
-
-		<!-- Example split danger button -->
-		<div class="btn-group">
-		  <button type="button" class="btn btn-danger">Browse Posters by:</button>
-		  <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		    <span class="sr-only">Toggle Dropdown</span>
-		  </button>
-		  <div class="dropdown-menu">
-		    <a class="dropdown-item" href="{{url_for('showYears')}}">Year</a>
-		    <a class="dropdown-item" href="{{url_for('showGenres')}}">Genre</a>
-		    <a class="dropdown-item" href="{{url_for('showDirectors')}}">Director</a>
-		  </div>
+		<!--									<polygon fill="#FFFFFF" points="10.182,15.341 19.12,15.341 15.182,11.403 16.12,10.341 21.62,15.903 21.62,16.403 16.182,21.529
+											15.182,20.466 19.12,16.403 10.182,16.403 "></polygon>-->
+										</svg>
+									</a>
+								</h2>
+							</div>
+							<div class="col">
+								<div class="nav-wrap">
+								  <nav class="menu">
+									<ul>
+									  <li><a href="{{url_for('showYears')}}">Year</a></li>
+									  <li><a href="{{url_for('showGenres')}}">Genre</a></li>
+									  <li><a href="{{url_for('showDirectors')}}">Director</a></li>
+									</ul>
+								  </nav>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
+	</div>
+</div>
+
 
 {% endblock %}

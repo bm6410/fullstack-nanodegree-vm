@@ -3,18 +3,26 @@
 {% block title %}Years{% endblock %}
 {% block content %}
 
-	<div class = 'pane'>
-		<div class = 'header'>
-		<h1>Years</h1>
+	<div class="container">
+		<div class='row'>
+			<div class="col">
+				<h1>Years</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<ul class="categoryList">
+						{% for uniqueYear in years %}
+						<a href="{{ url_for('showSearchResults', category = 'year', id = uniqueYear.year)}}">{{uniqueYear.year}}</a> <br>
+						{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<a href="{{url_for('showHomePage')}}" class="btn btn-outline-light my-2 my-sm-0">Go Back</a>
+			</div>
+		</div>
 	</div>
-
-<form action="#" method = 'post'>
-	<h2>Just showing years!</h2>
-<br>
-	{% for uniqueYear in years %}
-		<a href="{{ url_for('showSearchResults', category = 'year', id = uniqueYear.year)}}">{{uniqueYear.year}}</a> <br>
-	{% endfor %}
-
-  <a href="{{url_for('showHomePage')}}">Cancel</a>
 
 {% endblock %}

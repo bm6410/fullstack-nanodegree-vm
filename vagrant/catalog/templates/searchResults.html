@@ -3,18 +3,34 @@
 {% block title %}Search Results{% endblock %}
 {% block content %}
 
-	<div class = 'pane'>
-		<div class = 'header'>
-		<h1>Search Results</h1>
+<div class="container>
+	<div class="row">
+		<div class="col searchItem text-center">
+			<h1 class="heading-text">Search Results</h1>
+		</div>
 	</div>
-
-<form action="#" method = 'post'>
-	<h2>Just showing the search results!</h2>
-<br>
-	{% for poster in posters %}
-		<a href="{{url_for('showPosterInfo', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a> <br>
-	{% endfor %}
-
-  <a href="{{url_for('showHomePage')}}">Cancel</a>
-
+	<div class="row">
+		<div class="col">
+			{% for poster in posters %}
+			<div class="row align-items-center">
+				<!--<li>-->
+				<div class="col-sm searchItem searchItemImg">
+					<a href="{{url_for('showPosterInfo', poster_id=poster.id)}}">
+						<img class="img-thumbnail" src='{{ url_for('static', filename='img/' + poster.poster_img) }}' width="200px">
+					</a>
+				</div>
+				<div class="col searchItem searchItemLink">
+					<a href="{{url_for('showPosterInfo', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a>
+				</div>
+				<!--</li>-->
+			</div>
+			{% endfor %}
+			<div class="row">
+				<div class="col text-center mt-2">
+					<a href="{{referrer}}" class="btn btn-outline-light my-2 my-sm-0">Go Back</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

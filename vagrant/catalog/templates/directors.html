@@ -1,21 +1,27 @@
 {% extends "layout.html" %}
 
-{% block title %}Years{% endblock %}
+{% block title %}Directors{% endblock %}
 {% block content %}
 
-	<div class = 'pane'>
-		<div class = 'header'>
-		<h1>Directors</h1>
+	<div class="container">
+		<div class='row'>
+			<div class="col">
+				<h1>Directors</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<ul class="categoryList">
+					{% for director in directors %}
+					<a href="{{ url_for('showSearchResults', category='director', id = director.id)}}">{{director.name}}</a> <br>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<a href="{{url_for('showHomePage')}}" class="btn btn-outline-light my-2 my-sm-0">Go Back</a>
+			</div>
+		</div>
 	</div>
-
-<form action="#" method = 'post'>
-	<h2>Just showing directors!</h2>
-<br>
-	{% for director in directors %}
-		<a href="{{ url_for('showSearchResults', category='director', id = director.id)}}">{{director.name}}</a> <br>
-	{% endfor %}
-
-  <a href="{{url_for('showHomePage')}}">Cancel</a>
-
-
 {% endblock %}

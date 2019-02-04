@@ -5,35 +5,55 @@
 
 	<div class = 'pane'>
 		<div class = 'header'>
-		<h1>Edit Poster</h1>
+		<h1>Edit Poster {{posterObj.name}}</h1>
 	</div>
 
-<form action="{{url_for('editPoster', poster_id = posterObj.id)}}" method = 'post' enctype=multipart/form-data>
-	<h2>Edit item number {{posterObj.id}}</h2>
-	Title:
-  <input type ='text' size='30' name='title' value='{{posterObj.title}}' required = true>
-	<br>
-	Release Date:
-	<input type ='text' size='4' name='year' value='{{posterObj.year}}' required = true>
-	<br>
-	Director:
-	<input type ='text' size='30' name='director' value='{{posterObj.director.name}}' required = true>
-	<br>
-	Image:
-	<input type ='file' size='30' name='poster_img' value='{{posterObj.poster_img}}'>
-	<br>
-	<div class = 'genres'>
-		<span class = 'name'><p>Genre</p></span>
-			<select name='genre'>
-				{% for genre in genres %}
-					{% if genre.id == posterObj.genre_id %}
-						<option selected value={{genre.id}}>{{genre.name}}</option>
-					{% else %}
-						<option value={{genre.id}}>{{genre.name}}</option>
-					{% endif %}
-				{% endfor %}
-			</select>
-	</div>
-	<a href='{{url_for('showHomePage')}}'>Cancel</a><input type='submit' value='Update Poster'>
+		<!--TODO: add validation from bootstrap-->
+
+	<form action="{{url_for('editPoster', poster_id = posterObj.id)}}" method = 'post' enctype=multipart/form-data>
+	  <div class="form-group col-sm-3">
+		<div class="form-group">
+			<label for="title">Title</label>
+			<input type="text" class="form-control" name="title" id='title' value='{{posterObj.title}}'>
+		</div>
+	  </div>
+		<div class="form-group col-sm-1">
+			<div class="form-group">
+				<label for="year">Release Date</label>
+				<input type="text" class="form-control" name='year' id="year" value='{{posterObj.year}}'>
+			</div>
+		</div>
+		<div class="form-group col-sm-3">
+			<div class="form-group">
+				<label for="director">Director</label>
+				<input type="text" class="form-control" name='director' id="director" value='{{posterObj.director.name}}'>
+			</div>
+		</div>
+		<div class="form-group col-sm-1">
+			<div class="form-group">
+				<label for="genre">Genre</label>
+				<select name='genre' id="genre" class="custom-select">
+					{% for genre in genres %}
+						{% if genre.id == posterObj.genre_id %}
+							<option selected value={{genre.id}}>{{genre.name}}</option>
+						{% else %}
+							<option value={{genre.id}}>{{genre.name}}</option>
+						{% endif %}
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		<div class="form-group col-sm-3">
+			<label for="poster_img">Poster Image</label>
+			<div class="custom-file">
+				<input type="file" class="custom-file-input" name='poster_img' id="poster_img" aria-describedby="inputGroupFileAddon01" text='{{posterObj.poster_img}}'>
+				<label class="custom-file-label" for="poster_img">Choose file</label>
+			</div>
+		</div>
+		<div class="form-group col-sm-3">
+			<a href="{{url_for('showPosterInfo', poster_id = posterObj.id)}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
+			<button class="btn btn-outline-light my-2 my-sm-0" type='submit'>Update Poster</button>
+		</div>
+	</form>
 
 {% endblock %}

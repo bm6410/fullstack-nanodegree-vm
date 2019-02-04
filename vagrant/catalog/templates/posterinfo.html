@@ -3,45 +3,34 @@
 {% block title %}Poster Info{% endblock %}
 {% block content %}
 
-	<h1>Info for Poster {{posterObj.id}}</h1>
-
 	<div class="container">
 		<div class="row">
-			<div class="col-4">
-		    <img src='{{ url_for('static', filename='img/' + posterObj.poster_img) }}' width='230', height='350' class="float-right">
-		  </div>
-			<div class="col">
-	      <div class="row">
-					<div class="col">
-		        <div class="row">
-		          <div class="col">
-		            <p class="text-left"><h2>{{posterObj.title}}</h2></p>
-		          </div>
-							<div class="col">
-								<h4>({{posterObj.year}})</h4>
-							</div>
-		        </div>
-		        <div class="row">
-		          <div class="col">
-								<p class="text-left"><strong>Genre:</strong>  {{posterObj.genre.name}}</p>
-		          </div>
-		        </div>
-		        <div class="row">
-		          <div class="col">
-		            <p class="text-left"><strong>Directed By:</strong>  {{posterObj.director.name}}</p>
-		          </div>
-		        </div>
-						<div class="row">
-							<div class="col">
-								<a href="{{url_for('editPoster', poster_id = posterObj.id)}}">Edit</a>
-							</div>
-							<div class="col">
-								<a href="{{url_for('showHomePage')}}">Cancel</a>
-							</div>
-						</div>
+			<div class="col-sm text-center">
+		    	<img class="img-fluid posterImg" src='{{ url_for('static', filename='img/' + posterObj.poster_img) }}'>
+		  	</div>
+			<div class="col-sm align-self-center">
+				<div class="row">
+					<div class="col text-center">
+						<h2>{{posterObj.title}}  ({{posterObj.year}})</h2>
 					</div>
-	      </div>
-		  </div>
+				</div>
+				<div class="row text-center">
+					<div class="col">
+						<p><strong>Genre:</strong>  {{posterObj.genre.name}}</p>
+					</div>
+				</div>
+				<div class="row text-center">
+					<div class="col">
+						<p><strong>Directed By:</strong>  {{posterObj.director.name}}</p>
+					</div>
+				</div>
+				<div class="row text-center">
+					<div class="col">
+						<a href={{referrer}} class="btn btn-outline-light my-2 my-sm-0">Go Back</a>
+						<a href="{{url_for('editPoster', poster_id = posterObj.id)}}" class="btn btn-outline-light my-2 my-sm-0">Edit Poster</a>
+					</div>
+				</div>
+		  	</div>
 		</div>
 	</div>
 
