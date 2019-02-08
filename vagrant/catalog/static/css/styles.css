@@ -31,7 +31,7 @@ html, body {
     width: 100%;
 /*    text-align: center;*/
     z-index: 1;
-    height: calc( 100vh + 30px );
+    height: calc( 100vh + -50px );
     transition: opacity 1s, z-index 2s;
 }
 
@@ -58,10 +58,6 @@ html, body {
     -webkit-transform: translate(0);
     -webkit-transition: all 200ms ease-in-out 0;
 }
-
-/*#herofooter {
-    padding-left: 15px;
-}*/
 
 .nav-wrap {
   overflow: hidden;
@@ -97,24 +93,20 @@ html, body {
     list-style-type: none;
 }
 
-/*.toggle-nav {
-    font-size: 0.75em;
-}*/
-
 .menu {
-    font-size: 1.25em;
+/*    font-size: 1.25em;*/
     float: left;
     visibility: hidden;
     position: relative;
     left: -100%;
-    transition-duration: 2s;
-    -webkit-transition-duration: 2s;
+    transition-duration: 1s;
+    -webkit-transition-duration: 1s;
 }
 .menu.active {
     visibility: visible;
     left: 0;
-    transition-duration: 1s;
-    -webkit-transition-duration: 1s;
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
 }
 .menu ul {
     margin: 0;
@@ -133,6 +125,35 @@ html, body {
     padding: 0;
     display: inline-block;
     text-transform: uppercase;
+}
+
+.right {
+    content: '';
+    display: inline-block;
+    /*  margin-top: .44em;*/
+    /*  margin-bottom: .22em;*/
+    margin-left: 0.75em;
+    width: .5em;
+    height: .5em;
+    border-top: 0.1em solid #FFF;
+    border-right: 0.1em solid #FFF;
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.right.active {
+    -moz-transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+}
+
+#slide-menu {
+    padding-left: 0px;
 }
 
 @media (max-width: 576px) {
@@ -155,14 +176,17 @@ html, body {
     .searchItemLink {
         text-align: center;
     }
+
+    .right {
+        margin-left: 0.25em;
+    }
+
+    #slide-menu {
+        padding-left: 15px;
+    }
 }
 
 /*----------------------------------------------------*/
-.contain{
-/*  margin-left:auto;
-  margin-right:auto;
-  margin-top:calc(calc(100vh - 480px)/2);*/
-}
 
 .alert{
   text-align:center;
