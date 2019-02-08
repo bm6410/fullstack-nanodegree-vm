@@ -15,12 +15,12 @@
 			<div class="row align-items-center">
 				<!--<li>-->
 				<div class="col-sm searchItem searchItemImg">
-					<a href="{{url_for('showPosterInfo', poster_id=poster.id)}}">
+					<a href="{{url_for('show_poster_info', poster_id=poster.id)}}">
 						<img class="img-thumbnail" src='{{ url_for('static', filename='img/' + poster.poster_img) }}' width="200px">
 					</a>
 				</div>
 				<div class="col searchItem searchItemLink">
-					<a href="{{url_for('showPosterInfo', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a>
+					<a href="{{url_for('show_poster_info', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a>
 				</div>
 				<!--</li>-->
 			</div>
