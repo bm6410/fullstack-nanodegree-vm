@@ -1,16 +1,11 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, jsonify, g
-from sqlalchemy.sql.functions import current_user
 from werkzeug.utils import secure_filename
-
 from dbmodel import db, app, User, Poster, Director, Genre
-from sqlalchemy import create_engine, func
-from sqlalchemy.orm import sessionmaker
 from flask_httpauth import HTTPTokenAuth, HTTPBasicAuth
 import random, string
 import os
 import json
 
-#NEW IMPORTS
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from flask import session
@@ -61,9 +56,9 @@ def addNewPoster():
         if request.method == 'POST':
             # if the director doesn't already exist, add to the db, then get the id
             director_name = request.form['director']
-            directorObj = Director.query.filter_by(name = director_name).first()
+            directorObj = Director.query.filter_by(name=director_name).first()
             if directorObj is None:
-                newDirector = Director(name = director_name)
+                newDirector = Director(name=director_name)
                 db.session.add(newDirector)
                 db.session.commit()
                 directorObj = newDirector
@@ -86,20 +81,20 @@ def addNewPoster():
 
             upload_file(file)
 
-            #-----------------------------------------------------------------------
+            # -----------------------------------------------------------------------
 
             # create the poster and add it to the db
-            newPoster = Poster(title = request.form['title'],
-                genre_id = request.form['genre'],
-                director_id = directorObj.id,
-                year = request.form['year'],
-                poster_img = file.filename)
+            newPoster = Poster(title=request.form['title'],
+                genre_id=request.form['genre'],
+                director_id=directorObj.id,
+                year=request.form['year'],
+                poster_img=file.filename)
 
             db.session.add(newPoster)
             db.session.commit()
-            return redirect(url_for('showPosterInfo', poster_id = newPoster.id))
+            return redirect(url_for('show_poster_info', poster_id=newPoster.id))
         else:
-            return render_template('newposter.html', genres = genres)
+            return render_template('newposter.html', genres=genres)
 
 
 # edit poster page, protected behind login
@@ -111,7 +106,7 @@ def editPoster(poster_id):
         return redirect('/clientOAuth')
     else:
         # get the object, then update it
-        posterObj = Poster.query.filter_by(id = poster_id).first()
+        posterObj = Poster.query.filter_by(id=poster_id).first()
 
         if request.method == 'POST':
             if posterObj is None:
@@ -122,9 +117,9 @@ def editPoster(poster_id):
                 posterObj.year = request.form['year']
                 # if the director doesn't already exist, create
                 director_name = request.form['director']
-                directorObj = Director.query.filter_by(name = director_name).first()
+                directorObj = Director.query.filter_by(name=director_name).first()
                 if directorObj is None:
-                    newDirector = Director(name = director_name)
+                    newDirector = Director(name=director_name)
                     db.session.add(newDirector)
                     db.session.commit()
                     directorObj = newDirector
@@ -157,22 +152,22 @@ def editPoster(poster_id):
                 posterObj.poster_img = file.filename
 
                 db.session.commit()
-                return redirect(url_for('showPosterInfo', poster_id = posterObj.id))
+                return redirect(url_for('show_poster_info', poster_id=posterObj.id))
 
         else:
-            return render_template('editPoster.html', posterObj = posterObj, genres = genres)
+            return render_template('editPoster.html', posterObj=posterObj, genres=genres)
 
 
 #delete poster page, protected behind login
 #@auth.login_required
 @app.route('/<int:poster_id>/delete', methods=['GET', 'POST'])
-def deletePoster(poster_id):
+def delete_poster(poster_id):
     if 'username' not in session:
         return redirect('/clientOAuth')
     else:
         if request.method == 'POST':
             # get the object, then delete it
-            posterObj = Poster.query.filter_by(id = poster_id).first()
+            posterObj = Poster.query.filter_by(id=poster_id).first()
             if posterObj is None:
                 return "Something didn't work"
             else:
@@ -182,26 +177,26 @@ def deletePoster(poster_id):
 
                 # if that is the last film for the particular director we just
                 # deleted, let's delete the director, too
-                posterByDirector = Poster.query.filter_by(director_id = director_id).first()
+                posterByDirector = Poster.query.filter_by(director_id=director_id).first()
                 if not posterByDirector:
-                    directorObj = Director.query.filter_by(id = director_id).first()
+                    directorObj = Director.query.filter_by(id=director_id).first()
                     db.session.delete(directorObj)
                     db.session.commit()
 
-                return render_template("index.html", genres = genres)
+                return render_template("index.html", genres=genres)
         else:
-            return render_template('deletePoster.html', poster_id = poster_id)
+            return render_template('delete_poster.html', poster_id=poster_id)
 
 
 # info for a poster
 # todo:  change to Poster.query.get_or_404(poster_id) when switching to Model
 @app.route('/<int:poster_id>')
-def showPosterInfo(poster_id):
+def show_poster_info(poster_id):
     posterObj = Poster.query.get(poster_id)
     if posterObj is None:
         return "Something didn't work"
     else:
-        return render_template('posterinfo.html', posterObj = posterObj, referrer = request.referrer)
+        return render_template('posterinfo.html', posterObj=posterObj, referrer=request.referrer)
 
 
 @app.route('/<int:poster_id>/JSON')
@@ -218,14 +213,14 @@ def showPosterInfoJSON(poster_id):
 def showSearchResults(category, id):
     # find all the posters for the given category
     if category == 'genre':
-        posters = Poster.query.filter_by(genre_id = id).all()
+        posters = Poster.query.filter_by(genre_id=id).all()
     elif category =='director':
-        posters = Poster.query.filter_by(director_id = id).all()
+        posters = Poster.query.filter_by(director_id=id).all()
     else:
-        posters = Poster.query.filter_by(year = id).all()
+        posters = Poster.query.filter_by(year=id).all()
 
     if len(posters) > 0:
-        return render_template('searchResults.html', posters = posters, root = APP_ROOT, referrer = request.referrer)
+        return render_template('searchResults.html', posters=posters, root=APP_ROOT, referrer=request.referrer)
     else:
         #TODO: show flash message here - something is broken
         return "Nothing to see here"
@@ -317,13 +312,12 @@ def redirect_url(default='showHomePage'):
 def start():
     #TODO: Fix this garbage
     # redirect_url() will always give us the default this way
-    return render_template('clientOAuth.html', redirectURL = redirect_url())
+    return render_template('clientOAuth.html', redirectURL=redirect_url())
 
 
 @app.route('/oauth/<provider>', methods = ['POST'])
 def login(provider):
-    #STEP 1 - Parse the auth code
-    #auth_code = request.json.get('auth_code')
+    # Parse the auth code
     auth_code = request.data
     print ("Step 1 - Complete, received auth code %s" % auth_code)
     if provider == 'google':
@@ -395,7 +389,7 @@ def login(provider):
         #see if user exists, if it doesn't make a new one
         user = db.session.query(User).filter_by(email=email).first()
         if not user:
-            user = User(username = name, picture = picture, email = email)
+            user = User(username=name, picture=picture, email=email)
             db.session.add(user)
             db.session.commit()
 
@@ -448,6 +442,7 @@ def logout():
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
+
 
 if __name__  == '__main__':
     app.config['SECRET_KEY'] = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
