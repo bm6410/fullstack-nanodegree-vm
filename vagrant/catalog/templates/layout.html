@@ -24,7 +24,7 @@
 
     <!--TODO: align these menus to the right-->
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-      <ul class="navbar-nav mr-auto mt-2 mt-lg-0 mx-auto">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item">
           <a class="nav-link" href="{{url_for('addNewPoster')}}">Add New Poster</a>
         </li>
@@ -59,6 +59,7 @@
       $('.js-nav').click(function(){
           //$(this).parent().find('.menu').toggleClass('active');
           $('.menu').toggleClass('active');
+          $('.right').toggleClass('active');
       });
     </script>
   </body>
