@@ -5,11 +5,12 @@
 
 <div class="container>
 	<div class="row">
-		<div class="col searchItem text-center">
-			<h1 class="heading-text">Search Results</h1>
-		</div>
+		<div class="col text-center categoryHeading">
+				<!--TODO: Change heading to indicate what year/genre/director we're looking at-->
+				<h1 class="categoryHeading"><span>Search Results</span></h1>
+			</div>
 	</div>
-	<div class="row">
+	<div class="row mt-4">
 		<div class="col">
 			{% for poster in posters %}
 			<div class="row align-items-center">

@@ -7,9 +7,11 @@
 
 	<div class="container">
 		<div class="row">
-			<h1 class="heading-text">Add New Poster</h1>
+			<div class="col text-center">
+				<h1 class="heading-text">Add New Poster</h1>
+			</div>
 		</div>
-		<form action="{{url_for('addNewPoster')}}" class="needs-validation" method = 'post' enctype=multipart/form-data>
+		<form action="{{url_for('add_new_poster')}}" class="needs-validation" method = 'post' enctype=multipart/form-data>
 			<div class="row">
 				<div class="col">
 					<div class="form-group">
@@ -35,8 +37,6 @@
 							{% endfor %}
 						</select>
 					</div>
-				</div>
-				<div class="col">
 					<div class="form-group">
 						<label for="poster_img">Poster Image</label>
 						<!--<form id="form1" runat="server">-->
@@ -54,9 +54,9 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col text-right">
+				<div class="col form-buttons">
 					<div class="form-group">
-						<a href="{{url_for('showHomePage')}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
+						<a href="{{url_for('show_home_page')}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
 						<button class="btn btn-outline-light my-2 my-sm-0" type='submit'>Create Poster Entry</button>
 					</div>
 				</div>

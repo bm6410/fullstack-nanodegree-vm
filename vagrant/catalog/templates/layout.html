@@ -16,8 +16,8 @@
   <body>
 
   <!--TODO: somehow, make the menu stick to the top-->
-  <nav class="navbar navbar-expand-lg navbar-dark" id="navTest">
-    <a class="navbar-brand" href="{{url_for('showHomePage')}}">Stick and Burn</a>
+  <nav class="navbar navbar-expand-lg navbar-dark mt-2" id="navTest">
+    <a class="navbar-brand" href="{{url_for('show_home_page')}}">Stick and Burn</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -26,14 +26,14 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="{{url_for('addNewPoster')}}">Add New Poster</a>
+          <a class="nav-link" href="{{url_for('add_new_poster')}}">Add New Poster</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Browse Posters by:</a>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{url_for('showYears')}}">Year</a>
-              <a class="dropdown-item" href="{{url_for('showGenres')}}">Genre</a>
-              <a class="dropdown-item" href="{{url_for('showDirectors')}}">Director</a>
+              <a class="dropdown-item" href="{{url_for('show_years')}}">Year</a>
+              <a class="dropdown-item" href="{{url_for('show_genres')}}">Genre</a>
+              <a class="dropdown-item" href="{{url_for('show_directors')}}">Director</a>
             </div>
         </li>
       </ul>
@@ -42,6 +42,16 @@
       </form>
     </div>
   </nav>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
 
     <div id="content" style="margin: 15px; padding: 10px;">{% block content %}{% endblock %}</div>
     <div id="footer">

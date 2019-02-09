@@ -6,7 +6,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-sm text-center">
-		    	<img class="img-fluid posterImg" src='{{ url_for('static', filename='img/' + posterObj.poster_img) }}'>
+		    	<img class="img-fluid posterImg" alt='{{posterObj.title}}' src='{{ url_for('static', filename='img/' + posterObj.poster_img) }}'>
 		  	</div>
 			<div class="col-sm align-self-center">
 				<div class="row">
@@ -27,7 +27,7 @@
 				<div class="row text-center">
 					<div class="col">
 						<a href={{referrer}} class="btn btn-outline-light my-2 my-sm-0">Go Back</a>
-						<a href="{{url_for('editPoster', poster_id = posterObj.id)}}" class="btn btn-outline-light my-2 my-sm-0">Edit Poster</a>
+						<a href="{{url_for('edit_poster', poster_id = posterObj.id)}}" class="btn btn-outline-light my-2 my-sm-0">Edit Poster</a>
 					</div>
 				</div>
 		  	</div>

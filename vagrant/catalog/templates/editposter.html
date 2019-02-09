@@ -3,57 +3,105 @@
 {% block title %}Edit a Poster{% endblock %}
 {% block content %}
 
-	<div class = 'pane'>
-		<div class = 'header'>
-		<h1>Edit Poster {{posterObj.name}}</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col text-center">
+				<h1 class="heading-text">Edit - {{posterObj.title}}</h1>
+			</div>
+		</div>
+		<!--TODO: add validation from bootstrap-->
+		<form action="{{url_for('edit_poster', poster_id = posterObj.id)}}" method = 'post' enctype=multipart/form-data>
+			<div class="row">
+				<div class="col">
+					<div class="form-group">
+						<label for="title">Title</label>
+						<input type="text" class="form-control" name="title" id='title' onchange="enableButton();" value='{{posterObj.title}}' style="min-width: 200px;" required>
+					</div>
+					<div class="valid-feedback">
+        				Looks good!
+      				</div>
+					<div class="form-group">
+						<label for="year">Release Date</label>
+						<input type="text" class="form-control" name='year' id="year" value='{{posterObj.year}}' required>
+					</div>
+					<div class="form-group">
+						<label for="director">Director</label>
+						<input type="text" class="form-control" name='director' id="director" value='{{posterObj.director.name}}' style="min-width: 200px;" required>
+					</div>
+					<div class="form-group">
+						<label for="genre">Genre</label>
+						<select name='genre' id="genre" class="custom-select">
+							{% for genre in genres %}
+								{% if genre.id == posterObj.genre_id %}
+									<option selected value={{genre.id}}>{{genre.name}}</option>
+								{% else %}
+									<option value={{genre.id}}>{{genre.name}}</option>
+								{% endif %}
+							{% endfor %}
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="poster_img">Poster Image</label>
+						<!--<form id="form1" runat="server">-->
+							<!--<div class="alert"></div>-->
+							<div id='img_contain'><img class="img-fluid" id="blah" src="{{ url_for('static', filename='img/' + posterObj.poster_img) }}" alt="your image" title=''/></div>
+						  <!--input type='file' id="imgInp" /--->
+						  <div class="input-group">
+						  <div class="custom-file">
+							<input type="file" name='poster_img' id="poster_img" class="imgInp custom-file-input" aria-describedby="inputGroupFileAddon01">
+							<label class="custom-file-label" for="poster_img">{{posterObj.poster_img}}</label>
+						  </div>
+						</div>
+						<!--</form>-->
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col text-center">
+					<div class="form-group">
+						<a href="{{url_for('show_poster_info', poster_id = posterObj.id)}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
+						<button class="btn btn-outline-light my-2 my-sm-0" type='submit' id="updateButton" disabled>Update Poster Entry</button>
+					</div>
+				</div>
+			</div>
+		</form>
 	</div>
 
-		<!--TODO: add validation from bootstrap-->
+	<script>
+		// TODO: need to give credit for this one https://codepen.io/gab5a430/pen/jPNXeX
+		function readURL(input) {
 
-	<form action="{{url_for('editPoster', poster_id = posterObj.id)}}" method = 'post' enctype=multipart/form-data>
-	  <div class="form-group col-sm-3">
-		<div class="form-group">
-			<label for="title">Title</label>
-			<input type="text" class="form-control" name="title" id='title' value='{{posterObj.title}}'>
-		</div>
-	  </div>
-		<div class="form-group col-sm-1">
-			<div class="form-group">
-				<label for="year">Release Date</label>
-				<input type="text" class="form-control" name='year' id="year" value='{{posterObj.year}}'>
-			</div>
-		</div>
-		<div class="form-group col-sm-3">
-			<div class="form-group">
-				<label for="director">Director</label>
-				<input type="text" class="form-control" name='director' id="director" value='{{posterObj.director.name}}'>
-			</div>
-		</div>
-		<div class="form-group col-sm-1">
-			<div class="form-group">
-				<label for="genre">Genre</label>
-				<select name='genre' id="genre" class="custom-select">
-					{% for genre in genres %}
-						{% if genre.id == posterObj.genre_id %}
-							<option selected value={{genre.id}}>{{genre.name}}</option>
-						{% else %}
-							<option value={{genre.id}}>{{genre.name}}</option>
-						{% endif %}
-					{% endfor %}
-				</select>
-			</div>
-		</div>
-		<div class="form-group col-sm-3">
-			<label for="poster_img">Poster Image</label>
-			<div class="custom-file">
-				<input type="file" class="custom-file-input" name='poster_img' id="poster_img" aria-describedby="inputGroupFileAddon01" text='{{posterObj.poster_img}}'>
-				<label class="custom-file-label" for="poster_img">Choose file</label>
-			</div>
-		</div>
-		<div class="form-group col-sm-3">
-			<a href="{{url_for('show_poster_info', poster_id = posterObj.id)}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
-			<button class="btn btn-outline-light my-2 my-sm-0" type='submit'>Update Poster</button>
-		</div>
-	</form>
+		  if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			var filename = $("#poster_img").val();
+			filename = filename.substring(filename.lastIndexOf('\\')+1);
+			reader.onload = function(e) {
+			  $('#blah').attr('src', e.target.result);
+			  $('#blah').hide();
+			  $('#blah').fadeIn(500);
+			  $('.custom-file-label').text(filename);
+			}
+			reader.readAsDataURL(input.files[0]);
+		  }
+		  $(".alert").removeClass("loading").hide();
+		}
 
+		$("#poster_img").change(function(event) {
+		  RecurFadeIn();
+		  readURL(this);
+		});
+
+		function RecurFadeIn(){
+		  console.log('ran');
+		  FadeInAlert("Wait for it...");
+		}
+		function FadeInAlert(text){
+		  $(".alert").show();
+		  $(".alert").text(text).addClass("loading");
+		}
+
+		function enableButton() {
+			$('#updateButton').prop('disabled', false);
+		}
+	</script>
 {% endblock %}
