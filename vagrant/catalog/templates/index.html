@@ -16,19 +16,18 @@
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-4 text-nowrap" style="padding-right: 0px;">
-								<h2 id="herofooter">
-									<!--TODO: move this style to the css file-->
-									<a href="#" class="toggle-nav js-nav" id="herofooterclick" style="text-decoration: none;">Browse Posters By:
+							<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 text-nowrap" style="padding-right: 0px;">
+								<h2 class="herofooter">
+									<a href="#" class="js-nav" id="herofooterclick">Browse Posters By:
 										<span class="right"></span>
 									</a>
 								</h2>
 							</div>
-							<!--TODO: need to fix the spacing and margins for iPad and iPhone 5-->
-							<div class="col" id="slide-menu">
+							<div class="col-xs-16 col-sm-6 col-md-12 col-lg-6" id="slide-menu">
 								<div class="nav-wrap">
 								  <nav class="menu">
 									<ul>
+										<!--TODO: maybe create an 'all' option-->
 									  <li><a href="{{url_for('show_years')}}">Year</a></li>
 									  <li><a href="{{url_for('show_genres')}}">Genre</a></li>
 									  <li><a href="{{url_for('show_directors')}}">Director</a></li>

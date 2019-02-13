@@ -6,9 +6,8 @@
 <div class="container>
 	<div class="row">
 		<div class="col text-center categoryHeading">
-				<!--TODO: Change heading to indicate what year/genre/director we're looking at-->
-				<h1 class="categoryHeading"><span>Search Results</span></h1>
-			</div>
+			<h1 class="categoryHeading"><span>Search Results</span></h1>
+		</div>
 	</div>
 	<div class="row mt-4">
 		<div class="col">
@@ -17,7 +16,7 @@
 				<!--<li>-->
 				<div class="col-sm searchItem searchItemImg">
 					<a href="{{url_for('show_poster_info', poster_id=poster.id)}}">
-						<img class="img-thumbnail" src='{{ url_for('static', filename='img/' + poster.poster_img) }}' width="200px">
+						<img class="img-thumbnail" src="{{ url_for('static', filename='img/' + poster.poster_img) }}" width="200px">
 					</a>
 				</div>
 				<div class="col searchItem searchItemLink">
@@ -28,7 +27,7 @@
 			{% endfor %}
 			<div class="row">
 				<div class="col text-center mt-2">
-					<a href="{{referrer}}" class="btn btn-outline-light my-2 my-sm-0">Go Back</a>
+					<a href="{{referrer}}" class="btn btn-outline-light my-2 my-sm-0">Back to {{title}}</a>
 				</div>
 			</div>
 		</div>

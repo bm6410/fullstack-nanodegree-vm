@@ -12,25 +12,25 @@
 		<!--TODO: add validation from bootstrap-->
 		<form action="{{url_for('edit_poster', poster_id = posterObj.id)}}" method = 'post' enctype=multipart/form-data>
 			<div class="row">
-				<div class="col">
+				<div class="col entryForm mx-auto">
 					<div class="form-group">
 						<label for="title">Title</label>
-						<input type="text" class="form-control" name="title" id='title' onchange="enableButton();" value='{{posterObj.title}}' style="min-width: 200px;" required>
+						<input type="text" class="form-control" name="title" id='title' onchange="enableButton();" value='{{posterObj.title}}' maxlength="255" required>
 					</div>
 					<div class="valid-feedback">
         				Looks good!
       				</div>
 					<div class="form-group">
 						<label for="year">Release Date</label>
-						<input type="text" class="form-control" name='year' id="year" value='{{posterObj.year}}' required>
+						<input type="text" class="form-control" name='year' id="year" onchange="enableButton();" value='{{posterObj.year}}' maxlength="4" required>
 					</div>
 					<div class="form-group">
 						<label for="director">Director</label>
-						<input type="text" class="form-control" name='director' id="director" value='{{posterObj.director.name}}' style="min-width: 200px;" required>
+						<input type="text" class="form-control" name='director' id="director" onchange="enableButton();" value='{{posterObj.director.name}}' maxlength="100" style="min-width: 200px;" required>
 					</div>
 					<div class="form-group">
 						<label for="genre">Genre</label>
-						<select name='genre' id="genre" class="custom-select">
+						<select name='genre' id="genre" onchange="enableButton();" class="custom-select">
 							{% for genre in genres %}
 								{% if genre.id == posterObj.genre_id %}
 									<option selected value={{genre.id}}>{{genre.name}}</option>
@@ -42,25 +42,25 @@
 					</div>
 					<div class="form-group">
 						<label for="poster_img">Poster Image</label>
-						<!--<form id="form1" runat="server">-->
-							<!--<div class="alert"></div>-->
 							<div id='img_contain'><img class="img-fluid" id="blah" src="{{ url_for('static', filename='img/' + posterObj.poster_img) }}" alt="your image" title=''/></div>
-						  <!--input type='file' id="imgInp" /--->
 						  <div class="input-group">
 						  <div class="custom-file">
-							<input type="file" name='poster_img' id="poster_img" class="imgInp custom-file-input" aria-describedby="inputGroupFileAddon01">
+							<input type="file" name='poster_img' id="poster_img" onchange="enableButton();" class="imgInp custom-file-input" aria-describedby="inputGroupFileAddon01">
+							<input type="hidden" id="poster_img_name" name="poster_img_name" value="{{posterObj.poster_img}}">
 							<label class="custom-file-label" for="poster_img">{{posterObj.poster_img}}</label>
 						  </div>
 						</div>
-						<!--</form>-->
 					</div>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col text-center">
+				<div class="col form-buttons">
 					<div class="form-group">
 						<a href="{{url_for('show_poster_info', poster_id = posterObj.id)}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
 						<button class="btn btn-outline-light my-2 my-sm-0" type='submit' id="updateButton" disabled>Update Poster Entry</button>
+						<div id="deleteLink">
+							<a href="/{{posterObj.id}}/delete">Delete Poster Entry</a>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -74,6 +74,7 @@
 		  if (input.files && input.files[0]) {
 			var reader = new FileReader();
 			var filename = $("#poster_img").val();
+			$("#poster_img_name").val(filename);
 			filename = filename.substring(filename.lastIndexOf('\\')+1);
 			reader.onload = function(e) {
 			  $('#blah').attr('src', e.target.result);

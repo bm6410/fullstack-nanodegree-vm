@@ -1,17 +1,26 @@
 {% extends "layout.html" %}
 
-{% block title %}Delete a Poster{% endblock %}
+{% block title %}Delete Poster {% endblock %}
 {% block content %}
 
-	<div class = 'pane'>
-		<div class = 'header'>
-		<h1>Delete Poster</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col text-center">
+				<h1 class="heading-text">Delete Poster</h1>
+			</div>
+		</div>
+		<form action="#" method = 'post' enctype=multipart/form-data>
+			<div class="row">
+				<div class="col text-center">
+					<h3>Are you sure you want to delete "{{poster_title}}"?</h3>
+					<span class="flashes">This action cannot be undone.</span>
+					<div class="form-group">
+						<button class="btn btn-outline-light my-2 my-sm-0" type='submit' id="deleteButton">Delete Poster Entry</button>
+						<a href="/{{poster_id}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</form>
 	</div>
 
-<form action="#" method = 'post'>
-  <h3>Are you sure you want to delete poster {{poster_id}}?</h3>
-  <input type ='text' size='30' name='name' placeholder='bozo'>
-	<input type='submit' value='Delete Poster'>
-  <a href="{{url_for('showHomePage')}}">Cancel</a>
-
-	{% endblock %}
+{% endblock %}

@@ -13,7 +13,7 @@
 
     {% endblock %}
   </head>
-  <body>
+  <body class="fade-out">
 
   <!--TODO: somehow, make the menu stick to the top-->
   <nav class="navbar navbar-expand-lg navbar-dark mt-2" id="navTest">
@@ -21,8 +21,6 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <!--TODO: align these menus to the right-->
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item">
@@ -37,17 +35,21 @@
             </div>
         </li>
       </ul>
-      <form class="form-inline my-2 my-lg-0" action={% if session['username'] %} "/logout" {% else %} "/clientOAuth" {% endif %}>
+      <form class="form-inline my-2 my-lg-0" action={% if session['username'] %} "/clientOAuth" {% else %} "/clientOAuth" {% endif %}>
+        {% if session['username'] %}
+          <img src="{{session['picture']}}" id="userIcon">
+        {% endif %}
         <button class="btn btn-outline-light my-2 my-sm-0" type="submit">{% if session['username'] %} Logout {% else %} Login {% endif %}</button>
       </form>
     </div>
   </nav>
 
-  {% with messages = get_flashed_messages() %}
+  <!--TODO: maybe put this in a better place-->
+  {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <ul class=flashes>
-      {% for message in messages %}
-        <li>{{ message }}</li>
+      {% for category, message in messages %}
+        <li {% if category=='error' %} style="color: red" {% else %} style="color: green" {% endif %} >{{ message }}</li>
       {% endfor %}
       </ul>
     {% endif %}
@@ -71,6 +73,14 @@
           $('.menu').toggleClass('active');
           $('.right').toggleClass('active');
       });
+
+      </script>
+    <script>
+
+      $(function() {
+        $('body').removeClass('fade-out');
+      });
+
     </script>
   </body>
 </html>
