@@ -8,17 +8,29 @@ html, body {
     font-style: normal;
     font-weight: 300;
     color: #FFFFFF;
+    opacity: 1;
+    transition: .5s opacity;
+}
+
+body.fade-out {
+    opacity: 0;
+    transition: none;
 }
 
 .flashes {
     color: red;
     font-style: italic;
 }
+
 .hero-text {
     font-family: upgrade, sans-serif;
     font-style: normal;
     font-weight: 600;
     font-size: 5em;
+}
+
+#herofooterclick {
+    text-decoration: none;
 }
 
 #navTest {
@@ -179,11 +191,26 @@ h1.categoryHeading span::after{
     padding-left: 0px;
 }
 
-.form-buttons {
-    text-align: right;
+.entryForm {
+    max-width: 50%;
 }
 
-@media (max-width: 576px) {
+.form-buttons {
+    text-align: center;
+}
+
+#deleteLink {
+    margin-top: 10px;
+}
+
+#userIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+@media (max-width: 768px) {
 
     .hero-text {
         font-family: upgrade, sans-serif;
@@ -215,6 +242,35 @@ h1.categoryHeading span::after{
     .form-buttons {
         text-align: center;
     }
+
+    .entryForm {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+
+      .hero-text {
+        font-family: upgrade, sans-serif;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 2em;
+    }
+
+    .herofooter {
+
+        font-size: 1.6rem;
+
+    }
+
+    .heading-text {
+        font-size: 1em;
+    }
+
+    #hero .tagline {
+        margin-left: -30px;
+    }
+
 }
 
 /*----------------------------------------------------*/
@@ -228,10 +284,8 @@ h1.categoryHeading span::after{
 }
 
 #img_contain{
-/*  border-radius:5px;*/
-  /*  border:1px solid grey;*/
-/*  width:auto;*/
     text-align: center;
+    margin-bottom: 15px;
 }
 .input-group{
 /*  margin-left:calc(calc(100vw - 320px)/2);
@@ -244,7 +298,7 @@ h1.categoryHeading span::after{
   padding:5px;
   background-color:#d3d3d3;
 }
-#blah{
+#img_placeholder{
   max-height:250px;
   /*max-width: 240px;*/
   height:auto;
