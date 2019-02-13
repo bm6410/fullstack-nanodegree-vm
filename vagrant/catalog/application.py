@@ -34,7 +34,7 @@ db.init_app(app)
 genres = db.session.query(Genre).all()
 
 
-# home page
+# displays the home page
 @app.route('/')
 def show_home_page():
     return render_template('index.html', genres=genres)
@@ -43,13 +43,15 @@ def show_home_page():
 # new poster page, protected behind login
 @app.route('/new', methods=['GET', 'POST'])
 # @auth.login_required
+# I wanted so badly to make this decorator work, but I could only get it to work when setting the auth token
+# in a curl call.  I couldn't figure out how to set that token in the cookie/session/whatever via my python code
+# so that it was available for this decorator
 def add_new_poster():
 
     if 'username' not in session:
         return redirect(url_for('start'))
 
     else:
-
         # if we don't already have this folder to upload files to, create it
         if not (os.path.isdir(app.config['UPLOAD_FOLDER'])):
             os.mkdir(app.config['UPLOAD_FOLDER'])
@@ -79,7 +81,7 @@ def add_new_poster():
                 return "There is no file name here"
 
             try:
-                filename = upload_file(file)
+                filename = upload_poster_img(file)
             except Exception as e:
                 msg = "Couldn't upload your file"
                 flash(msg)
@@ -97,6 +99,9 @@ def add_new_poster():
 
             db.session.add(new_poster)
             db.session.commit()
+
+            # poster was created, let's show the user a success message
+            flash('"' + request.form['title'] + '" created successfully!', 'success')
             return redirect(url_for('show_poster_info', poster_id=new_poster.id))
         else:
             return render_template('newposter.html', genres=genres)
@@ -133,35 +138,40 @@ def edit_poster(poster_id):
 
                 # if the form thingy isn't blank and is different than what we had
                 # before, let's delete what is there and upload the new one
+                old_file_name = poster_obj.poster_img
+                new_file_name = request.form['poster_img_name']
+                print("New file is " + new_file_name)
+                if new_file_name != old_file_name:
+                    # we have a new file, let's upload
 
-                # upload the file ------------------------------------------------------
-                # check if the post request has the file part
-                if 'poster_img' not in request.files:
-                    flash('No file part')
-                    return "There is no file part here in the form"
+                    # check if the post request has the file part
+                    if 'poster_img' not in request.files:
+                        flash('No file part')
+                        return "There is no file part here in the form"
 
-                file = request.files['poster_img']
-    #            if poster_obj.poster_img is not file.filename:
-                # we have a new file
+                    file = request.files['poster_img']
 
-                # if user does not select file
-                # submit an empty part without filename
-                if file.filename == '':
-                    flash('No selected file')
-                    return "There is no file name here"
+                    # if user does not select file submit an empty part without filename
+                    if file.filename == '':
+                        flash('No selected file')
+                        return "There is no file name here"
 
-                try:
-                    filename = upload_file(file)
-                except Exception as e:
-                    msg = "Couldn't upload your file"
-                    flash(msg)
-                    return msg
+                    try:
+                        filename = upload_poster_img(file)
+                    except Exception as e:
+                        msg = "Couldn't upload your file"
+                        flash(msg)
+                        return msg
 
-                # -----------------------------------------------------------------------
-                # os.remove(os.path.join(app.config['UPLOAD_FOLDER'], poster_obj.poster_img))
-                poster_obj.poster_img = filename
+                    poster_obj.poster_img = filename
+
+                    # remove the old file
+                    delete_poster_img(old_file_name)
 
                 db.session.commit()
+
+                # poster was edited successfully, let's show the user a success message
+                flash('"' + request.form['title'] + '" edited successfully!', 'success')
                 return redirect(url_for('show_poster_info', poster_id=poster_obj.id))
 
         else:
@@ -172,71 +182,85 @@ def edit_poster(poster_id):
 # @auth.login_required
 @app.route('/<int:poster_id>/delete', methods=['GET', 'POST'])
 def delete_poster(poster_id):
+    # ensure user is logged in first
     if 'username' not in session:
         return redirect('/clientOAuth')
     else:
-        if request.method == 'POST':
+        # user is logged in - get the object from the db, delete it, then clean up director and image info
+        poster_obj = Poster.query.filter_by(id=poster_id).first()
+        if poster_obj is None:
+            # we shouldn't get here, but if we do, something bad happened
+            flash('The poster could not be deleted', 'error')
+            return redirect(url_for("show_home_page"))
+
+        elif request.method == 'POST':
             # get the object, then delete it
-            poster_obj = Poster.query.filter_by(id=poster_id).first()
-            if poster_obj is None:
-                return "Something didn't work"
-            else:
-                director_id = poster_obj.director_id
-                db.session.delete(poster_obj)
+            director_id = poster_obj.director_id
+            db.session.delete(poster_obj)
+            db.session.commit()
+
+            # if that is the last film for the particular director we just
+            # deleted, let's delete the director, too
+            poster_by_director = Poster.query.filter_by(director_id=director_id).first()
+            if not poster_by_director:
+                director_obj = Director.query.filter_by(id=director_id).first()
+                db.session.delete(director_obj)
                 db.session.commit()
 
-                # if that is the last film for the particular director we just
-                # deleted, let's delete the director, too
-                poster_by_director = Poster.query.filter_by(director_id=director_id).first()
-                if not poster_by_director:
-                    director_obj = Director.query.filter_by(id=director_id).first()
-                    db.session.delete(director_obj)
-                    db.session.commit()
+            # now delete the poster from the directory so they're not just hanging around
+            delete_poster_img(poster_obj.poster_img)
 
-                return render_template("index.html", genres=genres)
+            flash('Successfully deleted "' + poster_obj.title + '"', 'success')
+            return render_template("index.html", genres=genres)
         else:
-            return render_template('delete_poster.html', poster_id=poster_id)
+            return render_template('deleteposter.html', poster_id=poster_id, poster_title=poster_obj.title)
 
 
-# info for a poster
-# todo:  change to Poster.query.get_or_404(poster_id) when switching to Model
+# info for a single poster with the given ID
 @app.route('/<int:poster_id>')
 def show_poster_info(poster_id):
     poster_obj = Poster.query.get(poster_id)
     if poster_obj is None:
-        return "Something didn't work"
+        # we should never get here, but just in case...
+        flash('The poster you requested could not be found.', 'error');
+        return redirect(url_for("show_home_page"))
     else:
         return render_template('posterinfo.html', posterObj=poster_obj, referrer=request.referrer)
 
 
+# info for a single poster with the given ID in JSON format
 @app.route('/<int:poster_id>/JSON')
 def show_poster_info_json(poster_id):
     poster_obj = Poster.query.get(poster_id)
     if poster_obj is None:
+        # TODO:  need to return something meaningful
         return "Something didn't work"
     else:
         return jsonify(Poster=[poster_obj.serialize])
 
 
-# page to display search results
+# page to display search results for a category with the given ID
 @app.route('/searchResults/<string:category>/<int:id>')
 def show_search_results(category, id):
     # find all the posters for the given category
     if category == 'genre':
         posters = Poster.query.filter_by(genre_id=id).all()
         redirect_route = 'show_genres'
+        title = "Genres"
     elif category == 'director':
         posters = Poster.query.filter_by(director_id=id).all()
         redirect_route = 'show_directors'
+        title = "Directors"
     else:
         posters = Poster.query.filter_by(year=id).all()
         redirect_route = 'show_years'
+        title = "Years"
 
     if len(posters) > 0:
-        return render_template('searchResults.html', posters=posters, root=APP_ROOT, referrer=request.referrer)
+        return render_template('searchResults.html', posters=posters, referrer=url_for(redirect_route), title=title)
     else:
         # return "Nothing to see here"
-        flash("We have no posters for that selection - please select another.")
+        flash('We have no posters for that selection - please select another.', 'error')
         return redirect(url_for(redirect_route))
 
 
@@ -284,18 +308,28 @@ def show_posters_for_category(category_id):
 
 
 # utility functions ----------------------------------------------------------------------------------------------------
+
 def allowed_file(filename):
     return '.' in filename and \
        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def upload_file(file):
+def upload_poster_img(file):
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename.replace(" ", "_"))
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return filename
     else:
         raise Exception("Couldn't save your file")
+
+
+def delete_poster_img(filename):
+    full_filename = app.config['UPLOAD_FOLDER'] + "/" + filename
+    if os.path.exists(full_filename):
+        os.remove(full_filename)
+    else:
+        flash(full_filename + " does not exist.", 'error')
+        raise Exception("File does not exist")
 
 
 # get the last url we were to send the user back
@@ -331,10 +365,10 @@ def start():
 
 
 @app.route('/oauth/<provider>', methods=['POST'])
+# TODO: add a successful login message
 def login(provider):
     # Parse the auth code
     auth_code = request.data
-    print("Step 1 - Complete, received auth code %s" % auth_code)
     if provider == 'google':
         # Exchange for a token
         try:
@@ -415,8 +449,8 @@ def login(provider):
 #         db.session.commit()
 
         # Send back token to the client
+        flash('You are now logged in as ' + name, 'success')
         return jsonify({'token': token.decode('ascii')})
-#        return jsonify({'access_token': access_token})
         # return jsonify({'token': token.decode('ascii')}), 201, {'Location': url_for('show_home_page', _external=True)}
 
     else:
@@ -425,7 +459,6 @@ def login(provider):
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    print("In the logout function")
     access_token = session.get('access_token')
     if access_token is None:
         print('Access Token is None')
@@ -433,28 +466,25 @@ def logout():
         response.headers['Content-Type'] = 'application/json'
         return response
     print('In gdisconnect auth token is %s', access_token)
-    print('User name is: ')
-    print(session['username'])
+    print('User name is: ' + session['username'])
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print('result is ')
-    print(result)
+    print('result is ' + str(result))
     if result['status'] == '200':
         del session['access_token']
         del session['gplus_id']
         del session['username']
         del session['email']
         del session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return redirect(url_for('show_home_page'))
-    else:
-        # TODO: go to error page with flash message
-        response = make_response(json.dumps('Failed to revoke token for given user.'))
-        response.headers['Content-Type'] = 'application/json'
-        return response
 
+        flash('You have successfully logged out!', 'success')
+
+    else:
+        flash('We were unable to log you out of Google.  Please try again.', 'error')
+
+    #return redirect(url_for('show_home_page'))
+    return "Successfully logged out"
 
 if __name__ == '__main__':
     app.config['SECRET_KEY'] = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
