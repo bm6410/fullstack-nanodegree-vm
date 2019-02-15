@@ -3,8 +3,7 @@
 {% block title %}Search Results{% endblock %}
 {% block content %}
 
-<!--TODO: think about displaying these differently...they look weird as they are-->
-<div class="container>
+<div class="container">
 	<div class="row">
 		<div class="col text-center categoryHeading">
 			<!--TODO: change heading to "Results for ..."-->
@@ -12,25 +11,27 @@
 		</div>
 	</div>
 	<div class="row mt-4">
+        {% for poster in posters %}
 		<div class="col">
-			{% for poster in posters %}
-			<div class="row align-items-center">
-				<div class="col-sm searchItem searchItemImg">
-					<a href="{{url_for('show_poster_info', poster_id=poster.id)}}">
-						<img class="img-thumbnail" src="{{ url_for('static', filename='img/' + poster.poster_img) }}" width="200px">
-					</a>
-				</div>
-				<div class="col searchItem searchItemLink">
-					<a href="{{url_for('show_poster_info', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a>
-				</div>
-			</div>
-			{% endfor %}
-			<div class="row">
-				<div class="col text-center mt-2">
-					<a href="{{session['redirect_route']}}" class="btn btn-outline-light my-2 my-sm-0">Back to {{title}}</a>
-				</div>
-			</div>
-		</div>
-	</div>
+            <div class="row align-items-center">
+                <div class="col-sm searchItem searchItemImg">
+                    <a href="{{url_for('show_poster_info', poster_id=poster.id)}}">
+                        <img class="img-thumbnail" src="{{ url_for('static', filename='img/' + poster.poster_img) }}">
+                    </a>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col searchItem searchItemLink">
+                    <a href="{{url_for('show_poster_info', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col text-center mt-2">
+            <a href="{{session['redirect_route']}}" class="btn btn-outline-light my-2 my-sm-0">Back to {{title}}</a>
+        </div>
+    </div>
 </div>
 {% endblock %}
