@@ -3,117 +3,61 @@
 {% block title %}Add a Poster{% endblock %}
 {% block content %}
 
-	<!--TODO: add validation from bootstrap-->
-
-	<div class="container">
-		<div class="row">
-			<div class="col text-center">
-				<h1 class="heading-text">Add New Poster</h1>
-			</div>
+<div class="container">
+	<div class="row">
+		<div class="col text-center">
+			<h1 class="heading-text">Add New Poster</h1>
 		</div>
-		<form action="{{url_for('add_new_poster')}}" class="needs-validation" method = 'post' enctype=multipart/form-data>
-			<div class="row">
-				<div class="col entryForm mx-auto">
-					<div class="form-group">
-						<label for="title">Title</label>
-						<input type="text" class="form-control" name="title" id='title' style="min-width: 200px;" required>
-					</div>
-					<div class="valid-feedback">
-        				Looks good!
-      				</div>
-					<div class="form-group">
-						<label for="year">Release Date</label>
-						<input type="text" class="form-control" name='year' id="year" maxlength="4" required>
-					</div>
-					<div class="form-group">
-						<label for="director">Director</label>
-						<input type="text" class="form-control" name='director' id="director" maxlength="100" style="min-width: 200px;" required>
-					</div>
-					<div class="form-group">
-						<label for="genre">Genre</label>
-						<select name='genre' id="genre" class="custom-select">
-							{% for genre in genres %}
-							<option value={{genre.id}}>{{genre.name}}</option>
-							{% endfor %}
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="poster_img">Poster Image</label>
-							<div id='img_contain'><img class="img-fluid" id="img_placeholder" src="http://www.clker.com/cliparts/c/W/h/n/P/W/generic-image-file-icon-hi.png" alt="your image" title=''/></div>
-						  <div class="input-group">
-						  <div class="custom-file">
+	</div>
+	<form action="{{url_for('add_new_poster')}}" class="needs-validation" method = 'post' enctype=multipart/form-data>
+		<div class="row">
+			<div class="col entryForm mx-auto">
+				<div class="form-group">
+					<label for="title">Title</label>
+					<input type="text" class="form-control text-input-field" name="title" id='title' required>
+				</div>
+				<div class="valid-feedback">
+					Looks good!
+				</div>
+				<div class="form-group">
+					<label for="year">Release Date</label>
+					<input type="text" class="form-control date-input-field" name='year' id="year" maxlength="4" required>
+				</div>
+				<div class="form-group">
+					<label for="director">Director</label>
+					<input type="text" class="form-control text-input-field" name='director' id="director" maxlength="100" required>
+				</div>
+				<div class="form-group">
+					<label for="genre">Genre</label>
+					<select name='genre' id="genre" class="custom-select">
+						{% for genre in genres %}
+						<option value={{genre.id}}>{{genre.name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="poster_img">Poster Image</label>
+					<div id='img_contain'><img class="img-fluid" id="img_container" src="http://www.clker.com/cliparts/c/W/h/n/P/W/generic-image-file-icon-hi.png" alt="your image" title=''/></div>
+					<div class="input-group">
+						<div class="custom-file">
 							<input type="file" name='poster_img' id="poster_img" class="imgInp custom-file-input" aria-describedby="inputGroupFileAddon01" required>
 							<label class="custom-file-label" for="poster_img">Choose file</label>
-						  </div>
 						</div>
-						<!--</form>-->
 					</div>
+					<!--</form>-->
 				</div>
 			</div>
-			<div class="row">
-				<div class="col form-buttons">
-					<div class="form-group">
-						<a href="{{url_for('show_home_page')}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
-						<button class="btn btn-outline-light my-2 my-sm-0" type='submit'>Create Poster Entry</button>
-					</div>
+		</div>
+		<div class="row">
+			<div class="col form-buttons">
+				<div class="form-group">
+					<a href="{{url_for('show_home_page')}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
+					<button class="btn btn-outline-light my-2 my-sm-0" type='submit'>Create Poster Entry</button>
 				</div>
 			</div>
-		</form>
-	</div>
-
-	<script>
-		// TODO: need to give credit for this one https://codepen.io/gab5a430/pen/jPNXeX
-		function readURL(input) {
-
-		  if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			var filename = $("#poster_img").val();
-			filename = filename.substring(filename.lastIndexOf('\\')+1);
-			reader.onload = function(e) {
-			  $('#img_placeholder').attr('src', e.target.result);
-			  $('#img_placeholder').hide();
-			  $('#img_placeholder').fadeIn(500);
-			  $('.custom-file-label').text(filename);
-			}
-			reader.readAsDataURL(input.files[0]);
-		  }
-		  $(".alert").removeClass("loading").hide();
-		}
-
-		$("#poster_img").change(function(event) {
-		  RecurFadeIn();
-		  readURL(this);
-		});
-
-		function RecurFadeIn(){
-		  console.log('ran');
-		  FadeInAlert("Wait for it...");
-		}
-		function FadeInAlert(text){
-		  $(".alert").show();
-		  $(".alert").text(text).addClass("loading");
-		}
-
-// TODO: do something with this
-// Example starter JavaScript for disabling form submissions if there are invalid fields
-(function() {
-  'use strict';
-  window.addEventListener('load', function() {
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.getElementsByClassName('needs-validation');
-    // Loop over them and prevent submission
-    var validation = Array.prototype.filter.call(forms, function(form) {
-      form.addEventListener('submit', function(event) {
-        if (form.checkValidity() === false) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-      }, false);
-    });
-  }, false);
-})();
-
-	</script>
+		</div>
+	</form>
+</div>
+<script src="{{ url_for('static', filename='js/sb_scripts.js') }}"></script>
 
 {% endblock %}

@@ -13,7 +13,7 @@
 			<div class="col text-center">
 				<ul class="categoryList">
 					{% for uniqueYear in years %}
-					<a href="{{ url_for('show_search_results', category = 'year', id = uniqueYear.year)}}">{{uniqueYear.year}}</a> <br>
+					<a href="{{ url_for('show_search_results', category = 'year', category_id = uniqueYear.year)}}">{{uniqueYear.year}}</a> <br>
 					{% endfor %}
 				</ul>
 			</div>

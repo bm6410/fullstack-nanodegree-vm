@@ -13,7 +13,7 @@
 			<div class="col text-center">
 				<ul class="categoryList">
 					{% for director in directors %}
-					<a href="{{ url_for('show_search_results', category='director', id = director.id)}}">{{director.name}}</a> <br>
+					<a href="{{ url_for('show_search_results', category='director', category_id = director.id)}}">{{director.name}}</a> <br>
 					{% endfor %}
 				</ul>
 			</div>
