@@ -267,22 +267,22 @@ def show_search_results(category, category_id):
     # find all the posters for the given category
     if category == 'genre':
         posters = Poster.query.order_by(Poster.title).filter_by(genre_id=category_id).all()
-        # redirect_route = 'show_genres'
         title = "Genres"
+        search_heading = Genre.query.filter_by(id=category_id).first().name
     elif category == 'director':
         posters = Poster.query.order_by(Poster.title).filter_by(director_id=category_id).all()
-        # redirect_route = 'show_directors'
         title = "Directors"
+        search_heading = Director.query.filter_by(id=category_id).first().name
     else:
         posters = Poster.query.order_by(Poster.title).filter_by(year=category_id).all()
-        # redirect_route = 'show_years'
         title = "Years"
+        search_heading = category_id
 
     # build navigation url so our back buttons work correctly
     session['current_category_url'] = request.path
 
     if len(posters) > 0:
-        return render_template('searchResults.html', posters=posters, title=title)
+        return render_template('searchResults.html', posters=posters, title=title, search_heading=search_heading)
     else:
         flash('We have no posters for that selection - please select another.', 'error')
         return redirect(session['redirect_route'])
