@@ -20,6 +20,7 @@ body.fade-out {
 .flashes {
     color: red;
     font-style: italic;
+    padding-right: 25px;
 }
 
 .hero-text {
@@ -47,7 +48,7 @@ body.fade-out {
     width: 100%;
 /*    text-align: center;*/
     z-index: 1;
-    height: calc( 100vh + -50px );
+    height: calc( 100vh - 110px );
     transition: opacity 1s, z-index 2s;
 }
 

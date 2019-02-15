@@ -3,6 +3,7 @@
 {% block title %}Poster Info{% endblock %}
 {% block content %}
 
+<!--TODO: make the director and genre hyperlinks-->
 	<div class="container">
 		<div class="row">
 			<div class="col-sm text-center">
@@ -16,12 +17,12 @@
 				</div>
 				<div class="row text-center">
 					<div class="col">
-						<p><strong>Genre:</strong>  {{posterObj.genre.name}}</p>
+						<p><strong>Genre:&nbsp;&nbsp;</strong>{{posterObj.genre.name}}</p>
 					</div>
 				</div>
 				<div class="row text-center">
 					<div class="col">
-						<p><strong>Directed By:</strong>  {{posterObj.director.name}}</p>
+						<p><strong>Directed By:&nbsp;&nbsp;</strong>{{posterObj.director.name}}	</p>
 					</div>
 				</div>
 				<div class="row text-center">
