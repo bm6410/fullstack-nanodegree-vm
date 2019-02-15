@@ -271,7 +271,7 @@ def show_search_results(category, category_id):
         title = "Genres"
     elif category == 'director':
         posters = Poster.query.filter_by(director_id=category_id).all()
-        # edirect_route = 'show_directors'
+        # redirect_route = 'show_directors'
         title = "Directors"
     else:
         posters = Poster.query.filter_by(year=category_id).all()
