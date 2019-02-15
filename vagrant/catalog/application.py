@@ -248,7 +248,7 @@ def show_poster_info(poster_id):
         flash('The poster you requested could not be found.', 'error')
         return redirect(url_for("show_home_page"))
     else:
-        return render_template('posterinfo.html', posterObj=poster_obj, referrer=request.referrer)
+        return render_template('posterinfo.html', posterObj=poster_obj)
 
 
 # info for a single poster with the given ID in JSON format
@@ -266,15 +266,15 @@ def show_poster_info_json(poster_id):
 def show_search_results(category, category_id):
     # find all the posters for the given category
     if category == 'genre':
-        posters = Poster.query.filter_by(genre_id=category_id).all()
+        posters = Poster.query.order_by(Poster.title).filter_by(genre_id=category_id).all()
         # redirect_route = 'show_genres'
         title = "Genres"
     elif category == 'director':
-        posters = Poster.query.filter_by(director_id=category_id).all()
+        posters = Poster.query.order_by(Poster.title).filter_by(director_id=category_id).all()
         # redirect_route = 'show_directors'
         title = "Directors"
     else:
-        posters = Poster.query.filter_by(year=category_id).all()
+        posters = Poster.query.order_by(Poster.title).filter_by(year=category_id).all()
         # redirect_route = 'show_years'
         title = "Years"
 
@@ -312,7 +312,7 @@ def show_directors():
 # return directors in JSON format
 @app.route('/category/director/JSON')
 def show_directors_json():
-    directors = Director.query.all()
+    directors = Director.query.order_by(Director.name)
     return jsonify(Director=[i.serialize for i in directors])
 
 
