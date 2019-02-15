@@ -3,9 +3,11 @@
 {% block title %}Search Results{% endblock %}
 {% block content %}
 
+<!--TODO: think about displaying these differently...they look weird as they are-->
 <div class="container>
 	<div class="row">
 		<div class="col text-center categoryHeading">
+			<!--TODO: change heading to "Results for ..."-->
 			<h1 class="categoryHeading"><span>Search Results</span></h1>
 		</div>
 	</div>
@@ -13,7 +15,6 @@
 		<div class="col">
 			{% for poster in posters %}
 			<div class="row align-items-center">
-				<!--<li>-->
 				<div class="col-sm searchItem searchItemImg">
 					<a href="{{url_for('show_poster_info', poster_id=poster.id)}}">
 						<img class="img-thumbnail" src="{{ url_for('static', filename='img/' + poster.poster_img) }}" width="200px">
@@ -22,12 +23,11 @@
 				<div class="col searchItem searchItemLink">
 					<a href="{{url_for('show_poster_info', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a>
 				</div>
-				<!--</li>-->
 			</div>
 			{% endfor %}
 			<div class="row">
 				<div class="col text-center mt-2">
-					<a href="{{referrer}}" class="btn btn-outline-light my-2 my-sm-0">Back to {{title}}</a>
+					<a href="{{session['redirect_route']}}" class="btn btn-outline-light my-2 my-sm-0">Back to {{title}}</a>
 				</div>
 			</div>
 		</div>
