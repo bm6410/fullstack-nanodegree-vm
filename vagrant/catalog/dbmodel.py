@@ -17,7 +17,6 @@ db = SQLAlchemy(app)
 
 # Random key used to sign tokens
 secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
-#
 
 # class to store user/password info.  passwords are hashed.  Borrowed from Udacity example code
 class User(db.Model):
