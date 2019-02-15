@@ -3,25 +3,26 @@
 {% block title %}Genres{% endblock %}
 {% block content %}
 
-	<div class="container">
-		<div class='row'>
-			<div class="col text-center categoryHeading">
-				<h1 class="categoryHeading"><span>Genres</span></h1>
-			</div>
-		</div>
-		<div class="row mt-3">
-			<div class="col text-center">
-				<ul class="categoryList">
-					{% for genre in genres %}
-					<li><a href="{{ url_for('show_search_results', category = 'genre', category_id = genre.id)}}">{{genre.name}}</a></li>
-					{% endfor %}
-				</ul>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col text-center">
-				<a href="{{url_for('show_home_page')}}" class="btn btn-outline-light my-2 my-sm-0">Go Back</a>
-			</div>
+<div class="container">
+	<div class='row'>
+		<div class="col text-center categoryHeading">
+			<h1 class="categoryHeading"><span>Genres</span></h1>
 		</div>
 	</div>
+	<div class="row mt-3">
+		<div class="col text-center">
+			<ul class="categoryList">
+				{% for genre in genres %}
+				<li><a href="{{ url_for('show_search_results', category = 'genre', category_id = genre.id)}}">{{genre.name}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col text-center">
+			<a href="{{url_for('show_home_page')}}" class="btn btn-outline-light my-2 my-sm-0"><i class="fa fa-home"></i> Home</a>
+		</div>
+	</div>
+</div>
+
 {% endblock %}
