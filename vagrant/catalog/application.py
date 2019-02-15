@@ -267,28 +267,31 @@ def show_search_results(category, category_id):
     # find all the posters for the given category
     if category == 'genre':
         posters = Poster.query.filter_by(genre_id=category_id).all()
-        redirect_route = 'show_genres'
+        # redirect_route = 'show_genres'
         title = "Genres"
     elif category == 'director':
         posters = Poster.query.filter_by(director_id=category_id).all()
-        redirect_route = 'show_directors'
+        # edirect_route = 'show_directors'
         title = "Directors"
     else:
         posters = Poster.query.filter_by(year=category_id).all()
-        redirect_route = 'show_years'
+        # redirect_route = 'show_years'
         title = "Years"
 
+    # build navigation url so our back buttons work correctly
+    session['current_category_url'] = request.path
+
     if len(posters) > 0:
-        return render_template('searchResults.html', posters=posters, referrer=url_for(redirect_route), title=title)
+        return render_template('searchResults.html', posters=posters, title=title)
     else:
-        # return "Nothing to see here"
         flash('We have no posters for that selection - please select another.', 'error')
-        return redirect(url_for(redirect_route))
+        return redirect(session['redirect_route'])
 
 
 # show page with genres
 @app.route('/category/genre')
 def show_genres():
+    session['redirect_route'] = request.path
     return render_template('genres.html', genres=genres)
 
 
@@ -301,6 +304,7 @@ def show_genres_json():
 # show page with directors
 @app.route('/category/director')
 def show_directors():
+    session['redirect_route'] = request.path
     directors = Director.query.order_by(Director.name)
     return render_template('directors.html', directors=directors)
 
@@ -315,6 +319,7 @@ def show_directors_json():
 # show page with years
 @app.route('/category/year')
 def show_years():
+    session['redirect_route'] = request.path
     unique_years = Poster.query.distinct(Poster.year).group_by(Poster.year)
     return render_template('years.html', years=unique_years)
 

@@ -15,8 +15,8 @@
 					<h3>Are you sure you want to delete "{{poster_title}}"?</h3>
 					<span class="flashes">This action cannot be undone.</span>
 					<div class="form-group">
+						<a href="{{url_for('edit_poster', poster_id=poster_id)}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
 						<button class="btn btn-outline-light my-2 my-sm-0" type='submit' id="deleteButton">Delete Poster Entry</button>
-						<a href="/{{poster_id}}" class="btn btn-outline-light my-2 my-sm-0">Cancel</a>
 					</div>
 				</div>
 			</div>
