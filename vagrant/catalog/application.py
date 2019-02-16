@@ -1,4 +1,5 @@
 from flask import render_template, url_for, redirect, request, flash, jsonify
+from flask_compress import Compress
 from werkzeug.utils import secure_filename
 from dbmodel import db, app, User, Poster, Director, Genre
 from flask_httpauth import HTTPTokenAuth
@@ -19,9 +20,14 @@ ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/img')
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+# compression for site resources
+COMPRESS_MIMETYPES = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+COMPRESS_LEVEL = 6
+COMPRESS_MIN_SIZE = 500
 
 app.debug = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+Compress(app)
 db.init_app(app)
 
 # let's just get the genres one time and use them everywhere
