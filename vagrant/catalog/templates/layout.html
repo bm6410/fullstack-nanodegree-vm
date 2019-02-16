@@ -1,84 +1,67 @@
 <!doctype html>
 <html>
-  <head>
-    {% block head %}
-    <title>{% block title %}{% endblock %}</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-    {% endblock %}
-  </head>
-  <body class="fade-out">
-
-  <nav class="navbar navbar-expand-lg navbar-dark mt-2" id="navTest">
-    <a class="navbar-brand" href="{{url_for('show_home_page')}}">Stick and Burn</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="{{url_for('add_new_poster')}}">Add New Poster</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Browse Posters by:</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{url_for('show_years')}}">Year</a>
-              <a class="dropdown-item" href="{{url_for('show_genres')}}">Genre</a>
-              <a class="dropdown-item" href="{{url_for('show_directors')}}">Director</a>
-            </div>
-        </li>
-      </ul>
-      <form class="form-inline my-2 my-lg-0" action={% if session['username'] %} "/clientOAuth" {% else %} "/clientOAuth" {% endif %}>
-        {% if session['username'] %}
-          <img src="{{session['picture']}}" id="userIcon">
-        {% endif %}
-        <button class="btn btn-outline-light my-2 my-sm-0" type="submit">{% if session['username'] %} Logout {% else %} Login {% endif %}</button>
-      </form>
-    </div>
-  </nav>
-
-  <!--TODO: maybe put this in a better place-->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul class=flashes>
-      {% for category, message in messages %}
-        <li {% if category=='error' %} style="color: red" {% else %} style="color: green" {% endif %} >{{ message }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
-
-    <div id="content" style="margin: 15px; padding: 10px;">{% block content %}{% endblock %}</div>
-    <div id="footer">
-      <!--{% block footer %}-->
-      <!--&copy; Copyright 2019 by <a href="http://stickandburn.com/">Stick and Burn</a>.-->
-      <!--{% endblock %}-->
-    </div>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
-    <script>
-      $('.js-nav').click(function(){
-          //$(this).parent().find('.menu').toggleClass('active');
-          $('.menu').toggleClass('active');
-          $('.right').toggleClass('active');
-      });
-
-      </script>
-    <script>
-
-      $(function() {
-        $('body').removeClass('fade-out');
-      });
-
-    </script>
-  </body>
+	<head>
+		{% block head %}
+		<title>{% block title %}{% endblock %}</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="author" content="Bijan Marashi">
+		<meta name="description" content="Item Catalog site - built for Udacity Fullstack Web Developer course">
+		<!-- CSS -->
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
+		<!-- Javascript -->
+        <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/all.min.js')}}"></script>
+		{% endblock %}
+	</head>
+	<body class="fade-out">
+		<nav class="navbar navbar-expand-lg navbar-dark mt-2" id="navTest">
+			<a class="navbar-brand" href="{{url_for('show_home_page')}}">Stick and Burn</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+				<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="{{url_for('add_new_poster')}}">Add New Poster</a>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Browse Posters by:</a>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="{{url_for('show_years')}}">Year</a>
+							<a class="dropdown-item" href="{{url_for('show_genres')}}">Genre</a>
+							<a class="dropdown-item" href="{{url_for('show_directors')}}">Director</a>
+						</div>
+					</li>
+				</ul>
+				<form class="form-inline my-2 my-lg-0" action={% if session['username'] %} "/clientOAuth" {% else %} "/clientOAuth" {% endif %}>
+				{% if session['username'] %}
+				<img src="{{session['picture']}}" id="userIcon" width="40px" height="40px">
+				{% endif %}
+				<button class="btn btn-outline-light my-2 my-sm-0" type="submit">{% if session['username'] %} Logout {% else %} Login {% endif %}</button>
+				</form>
+			</div>
+		</nav>
+		<!--TODO: maybe put this in a better place-->
+		{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+		<ul class=flashes>
+			{% for category, message in messages %}
+			<li {% if category=='error' %} style="color: red" {% else %} style="color: green" {% endif %} >{{ message }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+		{% endwith %}
+		<div id="content" style="margin: 15px; padding: 10px;">{% block content %}{% endblock %}</div>
+		<!-- Optional JavaScript -->
+        <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>-->
+		<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+		<script>
+			// function to help fade in/out the page transitions
+			$(function() {
+			  $('body').removeClass('fade-out');
+			});
+		</script>
+	</body>
 </html>
