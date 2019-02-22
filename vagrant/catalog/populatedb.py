@@ -1,5 +1,8 @@
 from dbmodel import db, Genre
 
+# if we're starting with a blank database, we need to run this script to
+# populate the genres
+
 # create the genres
 genres = [
     'Comedy',
