@@ -7,12 +7,13 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<meta name="author" content="Bijan Marashi">
 		<meta name="description" content="Item Catalog site - built for Udacity Fullstack Web Developer course">
+		<!--Photo by Rob Laughter on Unsplash (hero5 - not currently used)-->
 		<!-- CSS -->
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
 		<!-- Javascript -->
         <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
-        <script src="{{ url_for('static', filename='js/all.min.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/all.min.js')}}" async></script>
 		{% endblock %}
 	</head>
 	<body class="fade-out">
