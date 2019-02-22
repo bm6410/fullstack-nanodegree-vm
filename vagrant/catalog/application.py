@@ -41,7 +41,7 @@ def show_home_page():
     return render_template('index.html')
 
 
-# new poster page, protected behind login
+# new poster page entry form, protected behind login
 @app.route('/new', methods=['GET', 'POST'])
 # @auth.login_required
 # I wanted so badly to make this decorator work, but I could only get it to work when setting the auth token
@@ -49,6 +49,7 @@ def show_home_page():
 # so that it was available for this decorator
 def add_new_poster():
 
+    # ensure user is logged in first
     if 'username' not in session:
         return redirect(url_for('start'))
     else:
@@ -67,6 +68,7 @@ def add_new_poster():
                     raise Exception("There was an error retrieving the file from the form")
 
                 # will throw an UnsupportedMediaFile exception if the file isn't one we can accept or we can't upload
+                # will throw an IOError if we couldn't create the thumbnail
                 file = request.files['poster_img']
                 filename = upload_poster_img(file)
 
@@ -107,12 +109,13 @@ def add_new_poster():
             return render_template('newposter.html', genres=genres)
 
 
-# edit poster page, protected behind login
+# edit poster page form, protected behind login
 # @auth.login_required
 # TODO: need to better clean up if something fails
 @app.route('/<int:poster_id>/edit', methods=['GET', 'POST'])
 def edit_poster(poster_id):
 
+    # ensure user is logged in first
     if 'username' not in session:
         return redirect('/clientOAuth')
     else:
@@ -340,11 +343,13 @@ def show_years_json():
 
 # utility functions ----------------------------------------------------------------------------------------------------
 
+# checks that the file matches the allowed file types
 def allowed_file(filename):
     return '.' in filename and \
        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+# uploads the poster image to the server, and creates a thumbnail for use in search results
 def upload_poster_img(file):
     # TODO: optimum size for the page is 540x816.  if the pic is larger, resize before saving
     if file and allowed_file(file.filename):
@@ -361,8 +366,9 @@ def upload_poster_img(file):
             img_copy = im.copy()
             img_copy.thumbnail(size)
             img_copy.save(thumbnail, "JPEG")
+
         except IOError:
-            print("cannot create thumbnail for", infile)
+            raise IOError("Couldn't create a thumbnail of your image.  Please try again.")
 
         return filename
     else:
@@ -407,10 +413,9 @@ def redirect_url(default='show_home_page'):
 #     return True
 
 
+# sends the user to the login page
 @app.route('/clientOAuth')
 def start():
-    # TODO: Fix this garbage
-    # redirect_url() will always give us the default this way
     return render_template('clientOAuth.html', redirectURL=redirect_url())
 
 
@@ -469,7 +474,6 @@ def login(provider):
         # Find User or make a new one
 
         # Get user info
-        # h=httplib2.Http()
         userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
         params = {'access_token': credentials.access_token, 'alt': 'json'}
         answer = requests.get(userinfo_url, params=params)
@@ -492,9 +496,9 @@ def login(provider):
             db.session.add(user)
             db.session.commit()
 
-        # Make token - not really using this for anything
+        # Make token - not really using this for anything anymore (since I couldn't figure out how to store it
         token = user.generate_auth_token(600)
-        print("*** user token: " + str(token))
+        # print("*** user token: " + str(token))
 #        request.headers['WWW-Authenticate'] = token
 #         user.token = token.decode('ascii')
 #         db.session.commit()
@@ -512,16 +516,16 @@ def login(provider):
 def logout():
     access_token = session.get('access_token')
     if access_token is None:
-        print('Access Token is None')
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    print('In gdisconnect auth token is %s', access_token)
-    print('User name is: ' + session['username'])
+
+    # print('In gdisconnect auth token is %s', access_token)
+    # print('User name is: ' + session['username'])
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print('result is ' + str(result))
+    # print('result is ' + str(result))
     if result['status'] == '200':
         del session['access_token']
         del session['gplus_id']
