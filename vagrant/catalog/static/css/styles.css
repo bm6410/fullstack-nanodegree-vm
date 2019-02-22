@@ -21,15 +21,25 @@ html, body {
      transition: none;
 }
  .flashes {
-     color: red;
      font-style: italic;
      padding-right: 25px;
 }
+ .flashes #error {
+    color: red;
+ }
+ .flashes #success {
+    color: green;
+ }
  .hero-text {
      font-family: upgrade, sans-serif;
      font-style: normal;
      font-weight: 600;
      font-size: 5em;
+}
+#definition {
+    font-family: courier, regular;
+    font-size: 1em;
+    margin-left: 5px;
 }
  #herofooterclick {
      text-decoration: none;
@@ -60,6 +70,10 @@ html, body {
      padding-left: 0;
      transition: all 0.5s;
 }
+
+ #headingRow {
+     margin-right: 0px;
+ }
  .container-fluid {
      margin-right: auto;
      margin-left: auto;
@@ -182,12 +196,24 @@ html, body {
      border-radius: 50%;
      margin-right: 15px;
 }
+ @media (max-width: 1083px) {
+     .hero-text {
+         font-family: upgrade, sans-serif;
+         font-style: normal;
+         font-weight: 600;
+         font-size: 3.50em;
+    }
+ }
  @media (max-width: 768px) {
      .hero-text {
          font-family: upgrade, sans-serif;
          font-style: normal;
          font-weight: 600;
-         font-size: 3em;
+         font-size: 2.50em;
+    }
+    #definition {
+        font-size: .75em;
+        margin-left: 0px;
     }
      .heading-text {
          font-size: 1.5em;
@@ -230,6 +256,10 @@ html, body {
          font-style: normal;
          font-weight: 600;
          font-size: 2em;
+    }
+    #definition {
+        font-size: .5em;
+        margin-left: 0px;
     }
      .herofooter {
          font-size: 1.6rem;
