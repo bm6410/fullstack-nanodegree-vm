@@ -1,14 +1,14 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy import create_engine
-from passlib.apps import custom_app_context as pwd_context
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 import random, string
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
-from itsdangerous import(TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
-
-# Base = declarative_base()
+from itsdangerous import(
+    TimedJSONWebSignatureSerializer as
+    Serializer,
+    BadSignature,
+    SignatureExpired
+)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -16,9 +16,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posters.db'
 db = SQLAlchemy(app)
 
 # Random key used to sign tokens
-secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+secret_key = \
+    ''.join(random.choice(string.ascii_uppercase + string.digits)
+            for x in range(32))
 
-# class to store user/password info.  passwords are hashed.  Borrowed from Udacity example code
+# class to store user/password info.  Borrowed from Udacity example code
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -34,12 +36,12 @@ class User(db.Model):
     # def verify_password(self, password):
     #     return pwd_context.verify(password, self.password_hash)
 
-#     # Generate auth tokens
+    # Generate auth tokens - didn't end up using this
     def generate_auth_token(self, expiration=600):
         s = Serializer(secret_key, expires_in = expiration)
         return s.dumps({'id': self.id})
-#
-#     # Verify auth tokens here
+
+    # Verify auth tokens here
     @staticmethod
     def verify_auth_token(token):
         s = Serializer(secret_key)
@@ -55,6 +57,8 @@ class User(db.Model):
         user_id = data['id']
         return user_id
 
+
+# Directors
 class Director(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String)
@@ -66,6 +70,7 @@ class Director(db.Model):
             'name': self.name
         }
 
+# Genres
 class Genre(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String)
@@ -77,6 +82,7 @@ class Genre(db.Model):
             'name': self.name
         }
 
+# A Poster object
 class Poster(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
@@ -102,6 +108,3 @@ class Poster(db.Model):
             }
 
 db.create_all()
-
-# engine = create_engine('sqlite:///posters.db')
-# Base.metadata.create_all(engine)
