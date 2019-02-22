@@ -341,6 +341,16 @@ def show_poster_info_json(poster_id):
         return jsonify(Poster=[poster_obj.serialize])
 
 
+# shows all posters in the db in JSON format only
+@app.route('/searchResults/showAllPosters/JSON')
+def show_all_posters():
+    posters = Poster.query.all()
+    if posters is None:
+        return "Couldn't retrieve the posters"
+    else:
+        return jsonify(Poster=[i.serialize for i in posters])
+
+
 # page to display search results for a category with the given ID
 @app.route('/searchResults/<string:category>/<int:category_id>')
 def show_search_results(category, category_id):
@@ -384,6 +394,26 @@ def show_search_results(category, category_id):
             'error'
         )
         return redirect(session['redirect_route'])
+
+
+# page to display search results for a category with the given ID
+# results in JSON
+@app.route('/searchResults/<string:category>/<int:category_id>/JSON')
+def show_search_results_json(category, category_id):
+    # find all the posters for the given category
+    if category == 'genre':
+        posters = Poster.query.order_by(Poster.title).filter_by(
+            genre_id=category_id).all()
+    elif category == 'director':
+        posters = \
+            Poster.query.order_by(Poster.title).filter_by(
+                director_id=category_id).all()
+    else:
+        posters = \
+            Poster.query.order_by(Poster.title).filter_by(
+                year=category_id).all()
+
+    return jsonify(Poster=[i.serialize for i in posters])
 
 
 # show page with genres
