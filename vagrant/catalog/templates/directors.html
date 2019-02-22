@@ -12,9 +12,13 @@
 	<div class="row mt-3">
 		<div class="col text-center">
 			<ul class="categoryList">
-				{% for director in directors %}
-				<a href="{{ url_for('show_search_results', category='director', category_id = director.id)}}">{{director.name}}</a> <br>
-				{% endfor %}
+				{% if directors.count() == 0 %}
+					<span>There are no posters in the database. Please add one.</span>
+				{% else %}
+					{% for director in directors %}
+					<a href="{{ url_for('show_search_results', category='director', category_id = director.id)}}">{{director.name}}</a> <br>
+					{% endfor %}
+				{% endif %}
 			</ul>
 		</div>
 	</div>
