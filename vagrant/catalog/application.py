@@ -13,6 +13,7 @@ from flask import session
 import httplib2
 from flask import make_response
 import requests
+from PIL import Image
 
 auth = HTTPTokenAuth('Token')
 
@@ -345,19 +346,39 @@ def allowed_file(filename):
 
 
 def upload_poster_img(file):
+    # TODO: optimum size for the page is 540x816.  if the pic is larger, resize before saving
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename.replace(" ", "_"))
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        full_filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        file.save(full_filename)
+
+        # create a thumbnail image for search displays
+        size = (200, 325)
+        thumbnail = os.path.splitext(full_filename)[0] + ".thumbnail"
+        try:
+            im = Image.open(full_filename)
+            img_copy = im.copy()
+            img_copy.thumbnail(size)
+            img_copy.save(thumbnail, "JPEG")
+        except IOError:
+            print("cannot create thumbnail for", infile)
+
         return filename
     else:
         raise UnsupportedMediaType("Couldn't save your image.  " +
                                    "Please make sure to upload a .jpg, .jpeg, .png, or .gif file.")
 
 
+# delete the poster image file from the server
 def delete_poster_img(filename):
     full_filename = app.config['UPLOAD_FOLDER'] + "/" + filename
     if os.path.exists(full_filename):
         os.remove(full_filename)
+
+        # delete the thumbnail, too
+        path_to_thumbnail = str.rsplit(full_filename, '.')[0] + ".thumbnail"
+        os.remove(path_to_thumbnail)
     else:
         raise Exception(full_filename + " does not exist.")
 
@@ -471,7 +492,7 @@ def login(provider):
             db.session.add(user)
             db.session.commit()
 
-        # Make token
+        # Make token - not really using this for anything
         token = user.generate_auth_token(600)
         print("*** user token: " + str(token))
 #        request.headers['WWW-Authenticate'] = token
@@ -481,7 +502,6 @@ def login(provider):
         # Send back token to the client
         flash('You are now logged in as ' + name, 'success')
         return jsonify({'token': token.decode('ascii')})
-        # return jsonify({'token': token.decode('ascii')}), 201, {'Location': url_for('show_home_page', _external=True)}
 
     else:
         return 'Unrecognized Provider'
