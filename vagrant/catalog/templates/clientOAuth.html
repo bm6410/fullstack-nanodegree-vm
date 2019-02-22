@@ -5,140 +5,129 @@
 {% block head %}
   {{ super() }}
 
-  <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
-  <!--TODO: Need this to be a better experience-->
-
-  <script src="https://apis.google.com/js/platform.js?onload=start"> </script>
-
-  <script>
-    gapi.load('auth2', function() {
-      auth2 = gapi.auth2.init({
-        client_id: '1027301706801-4npfvv2921jdgcrs7ltdgg9pnq9els80.apps.googleusercontent.com',
-      });
-    });
-  </script>
-
-  <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
-
+<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+<!--TODO: Need this to be a better experience-->
+<script src="https://apis.google.com/js/platform.js?onload=start"> </script>
+<script>
+	gapi.load('auth2', function() {
+	  auth2 = gapi.auth2.init({
+	    client_id: '1027301706801-4npfvv2921jdgcrs7ltdgg9pnq9els80.apps.googleusercontent.com',
+	  });
+	});
+</script>
+<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
 {% endblock %}
-
 {% block content %}
+<div id="result"></div>
+<div class="row">
+	<div class="col">
+		<h1>Login with OAuth 2.0</h1>
+	</div>
+</div>
+<div class="row">
+	<div class="col">
+		<h3>To modify the poster list, please login with Google.</h3>
+	</div>
+</div>
+{% if not session['username'] %}
+<div class="row ml-1 mt-2">
+	<div id="my-signin2"></div>
+</div>
+{% endif %}
+{% if session['username'] %}
+<div class="row ml-1 mt-2">
+	<a href="#" onclick="signOut();">Sign out of Google</a>
+</div>
+{% endif %}
+<script>
+	function onSuccess(googleUser) {
+	  console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+	}
+	function onFailure(error) {
+	  console.log(error);
+	}
+	function renderButton() {
+	  gapi.signin2.render('my-signin2', {
+	    'scope': 'profile email',
+	    'width': 240,
+	    'height': 50,
+	    'longtitle': true,
+	    'theme': 'dark',
+	  });
+	}
+</script>
+<script>
+	$('#my-signin2').click(function() {
+	  auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
+	});
+</script>
+<!--NEW GOOGLE SIGN IN CODE -->
+<script>
+	function signInCallback(json) {
+	  console.log(json);
+	  // authResult = JSON.parse(json);
+	  authResult = json;
+	  if (authResult['code']) {
+	    // Hide the sign-in button now that the user is authorized, for example:
+	    $('#my-signin2').attr('style', 'display: none');
+	    // Send the code to the server
+	    $.ajax({
+	      type: 'POST',
+	      url: '/oauth/google',
+	      processData: false,
+	      data: authResult['code'],
+	      contentType: 'application/octet-stream; charset=utf-8',
+	      success: function(result) {
+	        // Handle or verify the server response if necessary.
+	        if (result) {
+	          window.location.replace('{{ redirectURL }}');
+	        } else if (authResult['error']) {
+	          $('#result').html('Unable to log in to Google!</br>')
+	          console.log('There was an error: ' + authResult['error']);
+	        } else {
+	          $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+	        }
+	      }
+	    });
+	  }
+	}
+</script>
+<script>
+	var auth2;
 
-  <div id="result"></div>
+	gapi.load('auth2', function() {
+	    auth2 = gapi.auth2.init();
+	});
 
-  <div class="row">
-    <div class="col">
-      <h1>Login with OAuth 2.0</h1>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <h3>To modify the poster list, please login with Google.</h3>
-    </div>
-  </div>
-  {% if not session['username'] %}
-  <div class="row ml-1 mt-2">
-      <div id="my-signin2"></div>
-  </div>
-  {% endif %}
-  {% if session['username'] %}
-    <div class="row ml-1 mt-2">
-      <a href="#" onclick="signOut();">Sign out of Google</a>
-    </div>
-  {% endif %}
+	function signOut() {
+	  auth2.signOut().then(function() {
+	    // Send the code to the server
+	    $.ajax({
+	      type: 'POST',
+	      url: '/logout',
+	      processData: false,
+	      data: '',
+	      contentType: 'application/octet-stream; charset=utf-8',
+	      success: function(result) {
+	        // Handle or verify the server response if necessary.
+	        if (result) {
+	          //$('#result').html('Logout Successful!</br>'+ result + '');
+	          window.location.replace("{{ url_for('show_home_page') }}");
+	        } else if (authResult['error']) {
+	        // todo: there is no authResult object here
+	          console.log('There was an error: ' + authResult['error']);
+	        } else {
+	          $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+	        }
+	      }
+	    });
 
-  <script>
-    function onSuccess(googleUser) {
-      console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
-    }
-    function onFailure(error) {
-      console.log(error);
-    }
-    function renderButton() {
-      gapi.signin2.render('my-signin2', {
-        'scope': 'profile email',
-        'width': 240,
-        'height': 50,
-        'longtitle': true,
-        'theme': 'dark',
-      });
-    }
-  </script>
-  <script>
-    $('#my-signin2').click(function() {
-      auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
-    });
-  </script>
+	    //window.location.replace("{{ url_for('show_home_page') }}");
 
-  <!--NEW GOOGLE SIGN IN CODE -->
-  <script>
-  function signInCallback(json) {
-    console.log(json);
-    // authResult = JSON.parse(json);
-    authResult = json;
-    if (authResult['code']) {
-      // Hide the sign-in button now that the user is authorized, for example:
-      $('#my-signin2').attr('style', 'display: none');
-      // Send the code to the server
-      $.ajax({
-        type: 'POST',
-        url: '/oauth/google',
-        processData: false,
-        data: authResult['code'],
-        contentType: 'application/octet-stream; charset=utf-8',
-        success: function(result) {
-          // Handle or verify the server response if necessary.
-          if (result) {
-            window.location.replace('{{ redirectURL }}');
-          } else if (authResult['error']) {
-            $('#result').html('Unable to log in to Google!</br>')
-            console.log('There was an error: ' + authResult['error']);
-          } else {
-            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-          }
-        }
-      });
-    }
-  }
-  </script>
-  <script>
-      var auth2;
-
-      gapi.load('auth2', function() {
-          auth2 = gapi.auth2.init();
-      });
-
-      function signOut() {
-        auth2.signOut().then(function() {
-          // Send the code to the server
-          $.ajax({
-            type: 'POST',
-            url: '/logout',
-            processData: false,
-            data: '',
-            contentType: 'application/octet-stream; charset=utf-8',
-            success: function(result) {
-              // Handle or verify the server response if necessary.
-              if (result) {
-                //$('#result').html('Logout Successful!</br>'+ result + '');
-                window.location.replace("{{ url_for('show_home_page') }}");
-              } else if (authResult['error']) {
-              // todo: there is no authResult object here
-                console.log('There was an error: ' + authResult['error']);
-              } else {
-                $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-              }
-            }
-          });
-
-          //window.location.replace("{{ url_for('show_home_page') }}");
-
-          });
-      }
-  </script>
-  <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
-
+	    });
+	}
+</script>
+<script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 <!--END GOOGLE SIGN IN CODE -->
-
 
 {% endblock %}
