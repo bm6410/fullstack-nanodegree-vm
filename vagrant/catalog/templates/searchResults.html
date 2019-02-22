@@ -15,7 +15,7 @@
             <div class="row align-items-center">
                 <div class="col-sm searchItem searchItemImg">
                     <a href="{{url_for('show_poster_info', poster_id=poster.id)}}">
-                        <img class="img-thumbnail" src="{{ url_for('static', filename='img/' + poster.poster_img) }}">
+                        <img class="img-thumbnail" src="{{ url_for('static', filename='img/' + poster.poster_img.rsplit('.')[0] + '.thumbnail') }}" width="200px" height="325px">
                     </a>
                 </div>
             </div>
