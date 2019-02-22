@@ -36,7 +36,7 @@
 						</div>
 					</li>
 				</ul>
-				<form class="form-inline my-2 my-lg-0" action={% if session['username'] %} "/clientOAuth" {% else %} "/clientOAuth" {% endif %}>
+				<form class="form-inline my-2 my-lg-0" action="/clientOAuth">
 				{% if session['username'] %}
 				<img src="{{session['picture']}}" id="userIcon" width="40px" height="40px">
 				{% endif %}
@@ -49,14 +49,12 @@
 		{% if messages %}
 		<ul class=flashes>
 			{% for category, message in messages %}
-			<li {% if category=='error' %} style="color: red" {% else %} style="color: green" {% endif %} >{{ message }}</li>
+			<li {% if category=='error' %} id="error" {% else %} id="success" {% endif %} >{{ message }}</li>
 			{% endfor %}
 		</ul>
 		{% endif %}
 		{% endwith %}
 		<div id="content" style="margin: 15px; padding: 10px;">{% block content %}{% endblock %}</div>
-		<!-- Optional JavaScript -->
-        <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>-->
 		<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
 		<script>
 			// function to help fade in/out the page transitions
