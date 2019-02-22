@@ -79,8 +79,8 @@ html, body {
  .posterImg {
      margin-bottom: 15px;
      margin-top: 15px;
-     max-width: 540px;
-     max-height: 816px;
+/*     max-width: 540px;
+     max-height: 816px;*/
 }
  .img-thumbnail {
 /*     min-width: 200px;
@@ -141,10 +141,6 @@ html, body {
  .right {
      content: '';
      display: inline-block;
-    /* margin-top: .44em;
-    */
-    /* margin-bottom: .22em;
-    */
      margin-left: 0.75em;
      width: .5em;
      height: .5em;
