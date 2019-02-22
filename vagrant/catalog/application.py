@@ -20,9 +20,15 @@ auth = HTTPTokenAuth('Token')
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/img')
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = \
+    json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 # compression for site resources
-COMPRESS_MIMETYPES = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+COMPRESS_MIMETYPES = [
+    'text/html',
+    'text/css',
+    'text/xml',
+    'application/json',
+    'application/javascript']
 COMPRESS_LEVEL = 6
 COMPRESS_MIN_SIZE = 500
 
@@ -38,15 +44,18 @@ genres = db.session.query(Genre).all()
 # displays the home page
 @app.route('/')
 def show_home_page():
+    session['redirect_route'] = request.path
+    session['current_category_url'] = request.path
     return render_template('index.html')
 
 
 # new poster page entry form, protected behind login
 @app.route('/new', methods=['GET', 'POST'])
 # @auth.login_required
-# I wanted so badly to make this decorator work, but I could only get it to work when setting the auth token
-# in a curl call.  I couldn't figure out how to set that token in the cookie/session/whatever via my python code
-# so that it was available for this decorator
+# I wanted so badly to make this decorator work, but I could only get it
+# to work when setting the auth token in a curl call.  I couldn't figure
+# out how to set that token in the cookie/session/whatever via my python
+# code so that it was available for this decorator
 def add_new_poster():
 
     # ensure user is logged in first
@@ -55,29 +64,36 @@ def add_new_poster():
     else:
 
         try:
-            # if we don't already have this folder to upload files to, create it
+            # create the upload folder if we don't already have
             if not (os.path.isdir(app.config['UPLOAD_FOLDER'])):
                 os.mkdir(app.config['UPLOAD_FOLDER'])
 
             if request.method == 'POST':
 
-                # upload the file - any errors here will end up throwing an exception and rolling everything back
+                # upload the file - any errors here will end up throwing an
+                # exception and rolling everything back
 
                 # check if the post request has the file part
                 if 'poster_img' not in request.files:
-                    raise Exception("There was an error retrieving the file from the form")
+                    raise Exception(
+                        "There was an error retrieving the file from the form"
+                    )
 
-                # will throw an UnsupportedMediaFile exception if the file isn't one we can accept or we can't upload
+                # will throw an UnsupportedMediaFile exception if the file
+                # isn't one we can accept or we can't upload
                 # will throw an IOError if we couldn't create the thumbnail
                 file = request.files['poster_img']
                 filename = upload_poster_img(file)
 
-                # start a savepoint here, so we can rollback all of it if this fails
+                # start a savepoint here, so we can rollback all of it if
+                # this fails
                 db.session.begin_nested()
 
-                # if the director doesn't already exist, add to the db, then get the id
-                director_name: string = request.form['director']
-                director_obj = Director.query.filter_by(name=director_name).first()
+                # if the director doesn't already exist, add to the db, then
+                # get the id
+                director_name = request.form['director']
+                director_obj = \
+                    Director.query.filter_by(name=director_name).first()
                 if director_obj is None:
                     new_director = Director(name=director_name)
                     db.session.add(new_director)
@@ -96,8 +112,15 @@ def add_new_poster():
                 db.session.commit()
 
                 # poster was created, let's show the user a success message
-                flash('"' + request.form['title'] + '" created successfully!', 'success')
-                return redirect(url_for('show_poster_info', poster_id=new_poster.id))
+                flash(
+                    '"' +
+                    request.form['title'] +
+                    '" created successfully!',
+                    'success'
+                )
+                return redirect(
+                    url_for('show_poster_info', poster_id=new_poster.id)
+                )
 
             else:
                 return render_template('newposter.html', genres=genres)
@@ -105,13 +128,13 @@ def add_new_poster():
         except Exception as e:
             db.session.rollback()
             flash(e, 'error')
-            # TODO: should stop the submit so the user doesn't lose the data they have entered
+            # TODO: should stop the submit so the user doesn't lose the
+            #  data they have entered
             return render_template('newposter.html', genres=genres)
 
 
 # edit poster page form, protected behind login
 # @auth.login_required
-# TODO: need to better clean up if something fails
 @app.route('/<int:poster_id>/edit', methods=['GET', 'POST'])
 def edit_poster(poster_id):
 
@@ -126,7 +149,9 @@ def edit_poster(poster_id):
 
             if request.method == 'POST':
                 if poster_obj is None:
-                    return "Something didn't work"
+                    # we shouldn't get here, something bad happened
+                    flash('The poster could not be edited', 'error')
+                    return redirect(url_for("show_home_page"))
                 else:
 
                     # start transaction in case we need to rollback
@@ -136,9 +161,12 @@ def edit_poster(poster_id):
                     poster_obj.genre_id = request.form['genre']
                     poster_obj.year = request.form['year']
 
+                    old_director_id = poster_obj.director_id
+
                     # if the director doesn't already exist, create
                     director_name = request.form['director']
-                    director_obj = Director.query.filter_by(name=director_name).first()
+                    director_obj = \
+                        Director.query.filter_by(name=director_name).first()
                     if director_obj is None:
                         new_director = Director(name=director_name)
                         db.session.add(new_director)
@@ -147,7 +175,7 @@ def edit_poster(poster_id):
 
                     poster_obj.director_id = director_obj.id
 
-                    # if the form thingy isn't blank and is different than what we had
+                    # if the img field isn't blank and is different than we had
                     # before, let's delete what is there and upload the new one
                     old_file_name = poster_obj.poster_img
                     new_file_name = request.form['poster_img_name']
@@ -162,7 +190,8 @@ def edit_poster(poster_id):
 
                         file = request.files['poster_img']
 
-                        # if user does not select file submit an empty part without filename
+                        # if user does not select file submit an empty part
+                        # without filename
                         if file.filename == '':
                             flash('No selected file')
                             return "There is no file name here"
@@ -171,24 +200,53 @@ def edit_poster(poster_id):
                             filename = upload_poster_img(file)
                         except UnsupportedMediaType as e:
                             flash(e, 'error')
-                            return render_template('editPoster.html', posterObj=poster_obj, genres=genres)
+                            return render_template(
+                                'editPoster.html',
+                                posterObj=poster_obj,
+                                genres=genres
+                            )
 
                         poster_obj.poster_img = filename
 
                         # if nobody else needs it, remove the old file
-                        old_poster_img = Poster.query.filter_by(poster_img=old_file_name).first()
+                        old_poster_img = \
+                            Poster.query.filter_by(
+                                poster_img=old_file_name
+                            ).first()
                         if old_poster_img is None:
                             # safe to delete it...no one else needs it
                             delete_poster_img(old_file_name)
 
                     db.session.commit()
 
-                    # poster was edited successfully, let's show the user a success message
-                    flash('"' + request.form['title'] + '" edited successfully!', 'success')
-                    return redirect(url_for('show_poster_info', poster_id=poster_obj.id))
+                    # if that is the last film for the old director we just
+                    # deleted, let's delete the director, too
+                    if old_director_id != director_obj.id:
+                        poster_by_director = \
+                            Poster.query.filter_by(
+                                director_id=old_director_id).first()
+                        if not poster_by_director:
+                            old_director_obj = Director.query.filter_by(
+                                id=old_director_id).first()
+                            db.session.delete(old_director_obj)
+                            db.session.commit()
+
+                    # poster was edited successfully, let's show the
+                    # user a success message
+                    flash(
+                        '"' +
+                        request.form['title'] +
+                        '" edited successfully!',
+                        'success'
+                    )
+                    return redirect(
+                        url_for('show_poster_info', poster_id=poster_obj.id)
+                    )
 
             else:
-                return render_template('editPoster.html', posterObj=poster_obj, genres=genres)
+                return render_template(
+                    'editPoster.html', posterObj=poster_obj, genres=genres
+                )
 
         except Exception as e:
             db.session.rollback()
@@ -207,7 +265,8 @@ def delete_poster(poster_id):
     else:
 
         try:
-            # user is logged in - get the object from the db, delete it, then clean up director and image info
+            # user is logged in - get the object from the db, delete it,
+            # then clean up director and image info
             poster_obj = Poster.query.filter_by(id=poster_id).first()
             if poster_obj is None:
                 # we shouldn't get here, but if we do, something bad happened
@@ -225,23 +284,34 @@ def delete_poster(poster_id):
 
                 # if that is the last film for the particular director we just
                 # deleted, let's delete the director, too
-                poster_by_director = Poster.query.filter_by(director_id=director_id).first()
+                poster_by_director = Poster.query.filter_by(
+                    director_id=director_id).first()
                 if not poster_by_director:
-                    director_obj = Director.query.filter_by(id=director_id).first()
+                    director_obj = Director.query.filter_by(
+                        id=director_id).first()
                     db.session.delete(director_obj)
 
                 # if nobody else needs it, remove the old poster file
-                old_poster_img = Poster.query.filter_by(poster_img=poster_obj.poster_img).first()
+                old_poster_img = Poster.query.filter_by(
+                    poster_img=poster_obj.poster_img).first()
                 if old_poster_img is None:
                     # safe to delete it...no one else needs it
                     delete_poster_img(poster_obj.poster_img)
 
                 db.session.commit()
 
-                flash('Successfully deleted "' + poster_obj.title + '"', 'success')
+                flash(
+                    'Successfully deleted "' +
+                    poster_obj.title +
+                    '"', 'success'
+                )
                 return render_template("index.html", genres=genres)
             else:
-                return render_template('deleteposter.html', poster_id=poster_id, poster_title=poster_obj.title)
+                return render_template(
+                    'deleteposter.html',
+                    poster_id=poster_id,
+                    poster_title=poster_obj.title
+                )
 
         except Exception as e:
             db.session.rollback()
@@ -276,15 +346,25 @@ def show_poster_info_json(poster_id):
 def show_search_results(category, category_id):
     # find all the posters for the given category
     if category == 'genre':
-        posters = Poster.query.order_by(Poster.title).filter_by(genre_id=category_id).all()
+        posters = Poster.query.order_by(Poster.title).filter_by(
+            genre_id=category_id).all()
         title = "Genres"
         search_heading = Genre.query.filter_by(id=category_id).first().name
     elif category == 'director':
-        posters = Poster.query.order_by(Poster.title).filter_by(director_id=category_id).all()
+        posters = \
+            Poster.query.order_by(Poster.title).filter_by(
+                director_id=category_id).all()
+        # we can have a case where the director chosen has been deleted
+        # if so, let's just go back to the
+        # directors page
+        if len(posters) == 0:
+            return redirect(url_for('show_directors'))
         title = "Directors"
         search_heading = Director.query.filter_by(id=category_id).first().name
     else:
-        posters = Poster.query.order_by(Poster.title).filter_by(year=category_id).all()
+        posters = \
+            Poster.query.order_by(Poster.title).filter_by(
+                year=category_id).all()
         title = "Years"
         search_heading = category_id
 
@@ -292,9 +372,17 @@ def show_search_results(category, category_id):
     session['current_category_url'] = request.path
 
     if len(posters) > 0:
-        return render_template('searchResults.html', posters=posters, title=title, search_heading=search_heading)
+        return render_template(
+            'searchResults.html',
+            posters=posters,
+            title=title,
+            search_heading=search_heading
+        )
     else:
-        flash('We have no posters for that selection - please select another.', 'error')
+        flash(
+            'We have no posters for that selection - please select another.',
+            'error'
+        )
         return redirect(session['redirect_route'])
 
 
@@ -341,7 +429,7 @@ def show_years_json():
     return jsonify(Poster=[i.serialize for i in unique_years])
 
 
-# utility functions ----------------------------------------------------------------------------------------------------
+# utility functions ------------------------------------------------------
 
 # checks that the file matches the allowed file types
 def allowed_file(filename):
@@ -349,9 +437,11 @@ def allowed_file(filename):
        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# uploads the poster image to the server, and creates a thumbnail for use in search results
+# uploads the poster image to the server, and creates a thumbnail for use
+# in search results
 def upload_poster_img(file):
-    # TODO: optimum size for the page is 540x816.  if the pic is larger, resize before saving
+    # TODO: optimum size for the page is 540x816.  if the pic is larger,
+    #  resize before saving
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename.replace(" ", "_"))
         full_filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -368,12 +458,15 @@ def upload_poster_img(file):
             img_copy.save(thumbnail, "JPEG")
 
         except IOError:
-            raise IOError("Couldn't create a thumbnail of your image.  Please try again.")
+            raise IOError(
+                "Couldn't create a thumbnail of your image.  Please try again."
+            )
 
         return filename
     else:
-        raise UnsupportedMediaType("Couldn't save your image.  " +
-                                   "Please make sure to upload a .jpg, .jpeg, .png, or .gif file.")
+        raise UnsupportedMediaType(
+            "Couldn't save your image.  " +
+            "Please make sure to upload a .jpg, .jpeg, .png, or .gif file.")
 
 
 # delete the poster image file from the server
@@ -420,7 +513,8 @@ def start():
 
 
 # log in the user via Google accounts.
-# stores the user info in the session so other methods can verify user is logged in
+# stores the user info in the session so other methods can verify
+# user is logged in
 @app.route('/oauth/<provider>', methods=['POST'])
 def login(provider):
     # Parse the auth code
@@ -429,17 +523,24 @@ def login(provider):
         # Exchange for a token
         try:
             # Upgrade the authorization code into a credentials object
-            oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+            oauth_flow = \
+                flow_from_clientsecrets('client_secrets.json', scope='')
             oauth_flow.redirect_uri = 'postmessage'
             credentials = oauth_flow.step2_exchange(auth_code)
         except FlowExchangeError:
-            response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
+            response = \
+                make_response(
+                    json.dumps('Failed to upgrade the authorization code.'),
+                    401
+                )
             response.headers['Content-Type'] = 'application/json'
             return response
 
         # Check that the access token is valid.
         access_token = credentials.access_token
-        url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token)
+        url = \
+            ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+             % access_token)
         h = httplib2.Http()
         result = json.loads(h.request(url, 'GET')[1])
         # If there was an error in the access token info, abort.
@@ -450,20 +551,30 @@ def login(provider):
         # # Verify that the access token is used for the intended user.
         gplus_id = credentials.id_token['sub']
         if result['user_id'] != gplus_id:
-            response = make_response(json.dumps("Token's user ID doesn't match given user ID."), 401)
+            response = \
+                make_response(
+                    json.dumps("Token's user ID doesn't match given user ID."),
+                    401
+                )
             response.headers['Content-Type'] = 'application/json'
             return response
 
         # # Verify that the access token is valid for this app.
         if result['issued_to'] != CLIENT_ID:
-            response = make_response(json.dumps("Token's client ID does not match app's."), 401)
+            response = \
+                make_response(
+                    json.dumps("Token's client ID does not match app's."), 401
+                )
             response.headers['Content-Type'] = 'application/json'
             return response
 
         stored_credentials = session.get('access_token')
         stored_gplus_id = session.get('gplus_id')
         if stored_credentials is not None and gplus_id == stored_gplus_id:
-            response = make_response(json.dumps('Current user is already connected.'), 200)
+            response = \
+                make_response(
+                    json.dumps('Current user is already connected.'), 200
+                )
             response.headers['Content-Type'] = 'application/json'
             return response
 
@@ -496,7 +607,8 @@ def login(provider):
             db.session.add(user)
             db.session.commit()
 
-        # Make token - not really using this for anything anymore (since I couldn't figure out how to store it
+        # Make token - not really using this for anything anymore (since I
+        # couldn't figure out how to store it
         token = user.generate_auth_token(600)
         # print("*** user token: " + str(token))
 #        request.headers['WWW-Authenticate'] = token
@@ -516,13 +628,16 @@ def login(provider):
 def logout():
     access_token = session.get('access_token')
     if access_token is None:
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = \
+            make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # print('In gdisconnect auth token is %s', access_token)
     # print('User name is: ' + session['username'])
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % session['access_token']
+    url = \
+        'https://accounts.google.com/o/oauth2/revoke?token=%s' % \
+        session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     # print('result is ' + str(result))
@@ -536,13 +651,21 @@ def logout():
         flash('You have successfully logged out!', 'success')
 
     else:
-        flash('We were unable to log you out of Google.  Please try again.', 'error')
+        flash(
+            'We were unable to log you out of Google.  Please try again.',
+            'error'
+        )
 
     # return redirect(url_for('show_home_page'))
     return "Successfully logged out"
 
 
 if __name__ == '__main__':
-    app.config['SECRET_KEY'] = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
-    app.run(host='0.0.0.0', port=8082)
-    # app.run(host = '0.0.0.0', port=8000)
+    app.config['SECRET_KEY'] = \
+        ''.join(
+            random.choice(
+                string.ascii_uppercase + string.digits
+            ) for x in range(32)
+        )
+    # app.run(host='0.0.0.0', port=8082)
+    app.run(host = '0.0.0.0', port=8000)
