@@ -12,9 +12,13 @@
 	<div class="row mt-3">
 		<div class="col text-center">
 			<ul class="categoryList">
-				{% for uniqueYear in years %}
-				<a href="{{ url_for('show_search_results', category = 'year', category_id = uniqueYear.year)}}">{{uniqueYear.year}}</a> <br>
-				{% endfor %}
+				{% if years.count() == 0 %}
+					<span>There are no posters in the database. Please add one.</span>
+				{% else %}
+					{% for uniqueYear in years %}
+					<a href="{{ url_for('show_search_results', category = 'year', category_id = uniqueYear.year)}}">{{uniqueYear.year}}</a> <br>
+					{% endfor %}
+				{% endif %}
 			</ul>
 		</div>
 	</div>
