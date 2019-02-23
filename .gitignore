@@ -1,6 +1,5 @@
 
 .DS_Store
-vagrant/catalog/posters.db
 vagrant/catalog/.idea/catalog.iml
 vagrant/catalog/.idea/encodings.xml
 vagrant/catalog/.idea/misc.xml
