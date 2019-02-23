@@ -22,7 +22,8 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/img')
 CLIENT_ID = \
     json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
-# compression for site resources
+# compression for site resources - method borrowed from here:
+# https://damyanon.net/post/flask-series-optimizations/
 COMPRESS_MIMETYPES = [
     'text/html',
     'text/css',
@@ -462,6 +463,7 @@ def show_years_json():
 # utility functions ------------------------------------------------------
 
 # checks that the file matches the allowed file types
+# Borrowed from the Flask pages on Uploading Files
 def allowed_file(filename):
     return '.' in filename and \
        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -469,6 +471,7 @@ def allowed_file(filename):
 
 # uploads the poster image to the server, and creates a thumbnail for use
 # in search results
+# The basics of the thumbnail code comes from the Pillow documentation
 def upload_poster_img(file):
     # TODO: optimum size for the page is 540x816.  if the pic is larger,
     #  resize before saving
@@ -545,6 +548,7 @@ def start():
 # log in the user via Google accounts.
 # stores the user info in the session so other methods can verify
 # user is logged in
+# Much of this code was borrowed from Udacity example code
 @app.route('/oauth/<provider>', methods=['POST'])
 def login(provider):
     # Parse the auth code
@@ -654,6 +658,7 @@ def login(provider):
 
 
 # revokes the token with Google and removes the user info from the session
+# the bulk of this code was borrowed from Udacity
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     access_token = session.get('access_token')
