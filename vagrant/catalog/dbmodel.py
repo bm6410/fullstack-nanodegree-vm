@@ -27,7 +27,7 @@ class User(db.Model):
     username = db.Column(db.String(32), index=True)
     picture = db.Column(db.String)
     email = db.Column(db.String)
-    token = db.Column(db.Text)
+    # token = db.Column(db.Text)
 #    password_hash = db.Column(db.String(64))
 
     # def hash_password(self, password):
@@ -45,7 +45,6 @@ class User(db.Model):
     @staticmethod
     def verify_auth_token(token):
         s = Serializer(secret_key)
-        print("VERIFYING TOKEN = " + token)
         try:
             data = s.loads(token)
         except SignatureExpired:
@@ -56,6 +55,15 @@ class User(db.Model):
             return None
         user_id = data['id']
         return user_id
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'username': self.name,
+            'picture' : self.picture,
+            'email' : self.email
+        }
 
 
 # Directors
@@ -92,6 +100,8 @@ class Poster(db.Model):
     director = relationship(Director)
     year = db.Column(db.String)
     poster_img = db.Column(db.String)
+    user_id = db.Column(db.Integer, ForeignKey("user.id"))
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -104,7 +114,9 @@ class Poster(db.Model):
             'director_id' : self.director_id,
             'director' : self.director.name,
             'year' : self.year,
-            'poster_img' : self.poster_img
+            'poster_img' : self.poster_img,
+            'user_id' : self.user_id,
+            'user_name': self.user.username
             }
 
 db.create_all()
