@@ -16,7 +16,7 @@
 					<span>There are no posters in the database. Please add one.</span>
 				{% else %}
 					{% for director in directors %}
-					<a href="{{ url_for('show_search_results', category='director', category_id = director.id)}}">{{director.name}}</a> <br>
+					<a class="listLink" href="{{ url_for('show_search_results', category='director', category_id = director.id)}}">{{director.name}}</a> <br>
 					{% endfor %}
 				{% endif %}
 			</ul>

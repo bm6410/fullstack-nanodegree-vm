@@ -16,7 +16,7 @@
 					<span>There are no posters in the database. Please add one.</span>
 				{% else %}
 					{% for uniqueYear in years %}
-					<a href="{{ url_for('show_search_results', category = 'year', category_id = uniqueYear.year)}}">{{uniqueYear.year}}</a> <br>
+					<a class="listLink" href="{{ url_for('show_search_results', category = 'year', category_id = uniqueYear.year)}}">{{uniqueYear.year}}</a> <br>
 					{% endfor %}
 				{% endif %}
 			</ul>

@@ -6,7 +6,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col text-center">
-			<h1 class="heading-text">Add New Poster</h1>
+			<h1 class="heading-text categoryHeading">Add New Poster</h1>
 		</div>
 	</div>
 	<form action="{{url_for('add_new_poster')}}" class="needs-validation" method = 'post' enctype=multipart/form-data>
@@ -19,22 +19,25 @@
 				<div class="valid-feedback">
 					Looks good!
 				</div>
-				<div class="form-group">
-					<label for="year">Release Date</label>
-					<input type="text" class="form-control date-input-field" name='year' id="year" maxlength="4" required>
+				<div class="row">
+					<div class="form-group" style="padding-left: 15px;">
+						<label for="year">Release Date</label>
+						<input type="text" class="form-control date-input-field" name='year' id="year" maxlength="4" required>
+					</div>
+					<div class="form-group" style="padding-right: 15px; padding-left: 15px;">
+						<label for="genre">Genre</label>
+						<select name='genre' id="genre" class="custom-select">
+							{% for genre in genres %}
+							<option value={{genre.id}}>{{genre.name}}</option>
+							{% endfor %}
+						</select>
+					</div>
 				</div>
 				<div class="form-group">
 					<label for="director">Director</label>
 					<input type="text" class="form-control text-input-field" name='director' id="director" maxlength="100" required>
 				</div>
-				<div class="form-group">
-					<label for="genre">Genre</label>
-					<select name='genre' id="genre" class="custom-select">
-						{% for genre in genres %}
-						<option value={{genre.id}}>{{genre.name}}</option>
-						{% endfor %}
-					</select>
-				</div>
+
 				<div class="form-group">
 					<label for="poster_img">Poster Image</label>
 					<div id='img_contain'><img class="img-fluid" id="img_container" src="http://www.clker.com/cliparts/c/W/h/n/P/W/generic-image-file-icon-hi.png" alt="your image" title='' width="200px" height="250px"/></div>

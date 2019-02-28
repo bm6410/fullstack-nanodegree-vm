@@ -9,7 +9,7 @@
 			<h1 class="categoryHeading"><span>Results for "{{search_heading}}"</span></h1>
 		</div>
 	</div>
-	<div class="row mt-4">
+	<div class="row mt-4 justify-content-start">
         {% for poster in posters %}
 		<div class="col">
             <div class="row align-items-center">
@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="row align-items-center">
-                <div class="col searchItem searchItemLink">
+                <div class="col-sm searchItem searchItemLink">
                     <a href="{{url_for('show_poster_info', poster_id=poster.id)}}">{{poster.title}} ({{poster.year}})</a>
                 </div>
             </div>
