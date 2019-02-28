@@ -33,10 +33,11 @@ PIL - for Image manipulation support:
 ### Installing
 Installation has a couple options:
 
-####1. Install with a pre-populated database
+**1. Install with a pre-populated database**
+
 For this option, please use the posters.db file included in the project. This file includes contains several poster records across various genres, etc.
 
-####2. Install with a blank database
+####**2. Install with a blank database**
 
 For this option, remove posters.db from the directory.
 
