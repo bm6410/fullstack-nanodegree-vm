@@ -504,7 +504,11 @@ def show_years_json():
     """Returns the available years in JSON format."""
 
     unique_years = Poster.query.distinct(Poster.year).group_by(Poster.year)
-    return jsonify(Poster=[i.serialize for i in unique_years])
+    years = []
+    for poster in unique_years:
+        years.append(poster.year)
+
+    return json.dumps(years)
 
 
 # utility functions ------------------------------------------------------
