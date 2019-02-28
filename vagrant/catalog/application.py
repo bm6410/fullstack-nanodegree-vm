@@ -1,3 +1,4 @@
+"""Application.py"""
 from flask import render_template, url_for, redirect, request, flash, jsonify
 from flask_compress import Compress
 from werkzeug.utils import secure_filename
@@ -14,6 +15,7 @@ import httplib2
 from flask import make_response
 import requests
 from PIL import Image
+import logging
 
 auth = HTTPTokenAuth('Token')
 
@@ -33,6 +35,8 @@ COMPRESS_MIMETYPES = [
 COMPRESS_LEVEL = 6
 COMPRESS_MIN_SIZE = 500
 
+logging.basicConfig(level=logging.DEBUG)
+
 app.debug = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 Compress(app)
@@ -42,22 +46,22 @@ db.init_app(app)
 genres = db.session.query(Genre).all()
 
 
-# displays the home page
+# display the home page
 @app.route('/')
 def show_home_page():
+    """Displays the home page for the application."""
+
     session['redirect_route'] = request.path
     session['current_category_url'] = request.path
     return render_template('index.html')
 
 
-# new poster page entry form, protected behind login
+# display the add new poster form
 @app.route('/new', methods=['GET', 'POST'])
-# @auth.login_required
-# I wanted so badly to make this decorator work, but I could only get it
-# to work when setting the auth token in a curl call.  I couldn't figure
-# out how to set that token in the cookie/session/whatever via my python
-# code so that it was available for this decorator
 def add_new_poster():
+    """Displays and processes the form to add a new poster entry.
+
+    Protected behind login."""
 
     # ensure user is logged in first
     if 'username' not in session:
@@ -107,7 +111,9 @@ def add_new_poster():
                     genre_id=request.form['genre'],
                     director_id=director_obj.id,
                     year=request.form['year'],
-                    poster_img=filename)
+                    poster_img=filename,
+                    user_id=session['user_id']
+                )
 
                 db.session.add(new_poster)
                 db.session.commit()
@@ -119,6 +125,7 @@ def add_new_poster():
                     '" created successfully!',
                     'success'
                 )
+                logging.info(request.form['title'] + ' created.  Redirecting')
                 return redirect(
                     url_for('show_poster_info', poster_id=new_poster.id)
                 )
@@ -134,10 +141,13 @@ def add_new_poster():
             return render_template('newposter.html', genres=genres)
 
 
-# edit poster page form, protected behind login
-# @auth.login_required
+# displays edit poster form
 @app.route('/<int:poster_id>/edit', methods=['GET', 'POST'])
 def edit_poster(poster_id):
+    """Displays and processes form for user to edit an entry.
+
+    Protected behind login
+    Takes a poster_id as an argument."""
 
     # ensure user is logged in first
     if 'username' not in session:
@@ -180,7 +190,7 @@ def edit_poster(poster_id):
                     # before, let's delete what is there and upload the new one
                     old_file_name = poster_obj.poster_img
                     new_file_name = request.form['poster_img_name']
-                    print("New file is " + new_file_name)
+                    logging.debug("New file is " + new_file_name)
                     if new_file_name != old_file_name:
                         # we have a new file, let's upload
 
@@ -256,9 +266,12 @@ def edit_poster(poster_id):
 
 
 # delete poster page, protected behind login
-# @auth.login_required
 @app.route('/<int:poster_id>/delete', methods=['GET', 'POST'])
 def delete_poster(poster_id):
+    """Displays and processes the form to delete a poster.
+
+    Protected behind login
+    Takes a poster_id as an argument."""
 
     # ensure user is logged in first
     if 'username' not in session:
@@ -323,6 +336,10 @@ def delete_poster(poster_id):
 # info for a single poster with the given ID
 @app.route('/<int:poster_id>')
 def show_poster_info(poster_id):
+    """Displays the info for a specific poster.
+
+    Takes a poster_id for an argument."""
+
     poster_obj = Poster.query.get(poster_id)
     if poster_obj is None:
         # we should never get here, but just in case...
@@ -335,6 +352,10 @@ def show_poster_info(poster_id):
 # info for a single poster with the given ID in JSON format
 @app.route('/<int:poster_id>/JSON')
 def show_poster_info_json(poster_id):
+    """Returns the info for a specific poster in JSON format.
+
+    Takes a poster_id for an argument."""
+
     poster_obj = Poster.query.get(poster_id)
     if poster_obj is None:
         return "Couldn't return any info for poster with id=" + str(poster_id)
@@ -345,6 +366,10 @@ def show_poster_info_json(poster_id):
 # shows all posters in the db in JSON format only
 @app.route('/searchResults/showAllPosters/JSON')
 def show_all_posters():
+    """Returns all the posters in the database.
+
+    This only returns JSON"""
+
     posters = Poster.query.all()
     if posters is None:
         return "Couldn't retrieve the posters"
@@ -355,6 +380,11 @@ def show_all_posters():
 # page to display search results for a category with the given ID
 @app.route('/searchResults/<string:category>/<int:category_id>')
 def show_search_results(category, category_id):
+    """Displays the search results for a given category.
+
+    Args:   category as a string ('genre', 'director', 'year')
+            category_id as an int"""
+
     # find all the posters for the given category
     if category == 'genre':
         posters = Poster.query.order_by(Poster.title).filter_by(
@@ -401,6 +431,11 @@ def show_search_results(category, category_id):
 # results in JSON
 @app.route('/searchResults/<string:category>/<int:category_id>/JSON')
 def show_search_results_json(category, category_id):
+    """Returns the search results in JSON format.
+
+    Args:   category as a string ('genre', 'director', 'year')
+            category_id as an int"""
+
     # find all the posters for the given category
     if category == 'genre':
         posters = Poster.query.order_by(Poster.title).filter_by(
@@ -420,6 +455,8 @@ def show_search_results_json(category, category_id):
 # show page with genres
 @app.route('/category/genre')
 def show_genres():
+    """Displays the page with the list of genres."""
+
     session['redirect_route'] = request.path
     return render_template('genres.html', genres=genres)
 
@@ -427,12 +464,16 @@ def show_genres():
 # return genres in JSON format
 @app.route('/category/genre/JSON')
 def show_genres_json():
+    """Returns the list of genres in JSON format."""
+
     return jsonify(Genre=[i.serialize for i in genres])
 
 
 # show page with directors
 @app.route('/category/director')
 def show_directors():
+    """Displays the page with the available directors."""
+
     session['redirect_route'] = request.path
     directors = Director.query.order_by(Director.name)
     return render_template('directors.html', directors=directors)
@@ -441,6 +482,8 @@ def show_directors():
 # return directors in JSON format
 @app.route('/category/director/JSON')
 def show_directors_json():
+    """Returns the list of available directors in JSON format."""
+
     directors = Director.query.order_by(Director.name)
     return jsonify(Director=[i.serialize for i in directors])
 
@@ -448,6 +491,8 @@ def show_directors_json():
 # show page with years
 @app.route('/category/year')
 def show_years():
+    """Displays the page with the available years."""
+
     session['redirect_route'] = request.path
     unique_years = Poster.query.distinct(Poster.year).group_by(Poster.year)
     return render_template('years.html', years=unique_years)
@@ -456,6 +501,8 @@ def show_years():
 # return available years in JSON format
 @app.route('/category/year/JSON')
 def show_years_json():
+    """Returns the available years in JSON format."""
+
     unique_years = Poster.query.distinct(Poster.year).group_by(Poster.year)
     return jsonify(Poster=[i.serialize for i in unique_years])
 
@@ -465,14 +512,22 @@ def show_years_json():
 # checks that the file matches the allowed file types
 # Borrowed from the Flask pages on Uploading Files
 def allowed_file(filename):
+    """Checks that the file has an allowed extension.
+
+    Takes the filename as an argument."""
+
     return '.' in filename and \
-       filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # uploads the poster image to the server, and creates a thumbnail for use
 # in search results
 # The basics of the thumbnail code comes from the Pillow documentation
 def upload_poster_img(file):
+    """Uploads a file to the server's filesystem.
+
+    Takes the file as an argument."""
+
     # TODO: optimum size for the page is 540x816.  if the pic is larger,
     #  resize before saving
     if file and allowed_file(file.filename):
@@ -504,6 +559,11 @@ def upload_poster_img(file):
 
 # delete the poster image file from the server
 def delete_poster_img(filename):
+    """Deletes the given poster from the server's filesystem.
+
+    Takes the filename as an argument.
+    Will also remove the associated thumbnail image, if it exists."""
+
     full_filename = app.config['UPLOAD_FOLDER'] + "/" + filename
     if os.path.exists(full_filename):
         os.remove(full_filename)
@@ -517,9 +577,11 @@ def delete_poster_img(filename):
 
 # get the last url we were to send the user back
 def redirect_url(default='show_home_page'):
+    """Returns the url of the last page the user was on."""
+
     return request.args.get('next') or \
-           request.referrer or \
-           url_for(default)
+        request.referrer or \
+        url_for(default)
 
 
 # Authentication code
@@ -542,6 +604,8 @@ def redirect_url(default='show_home_page'):
 # sends the user to the login page
 @app.route('/clientOAuth')
 def start():
+    """Displays the login page to the user."""
+
     return render_template('clientOAuth.html', redirectURL=redirect_url())
 
 
@@ -551,6 +615,11 @@ def start():
 # Much of this code was borrowed from Udacity example code
 @app.route('/oauth/<provider>', methods=['POST'])
 def login(provider):
+    """Logs in the user with the given provider.
+
+    Args:   provider as string (currently only supports 'google')
+    Stores the user info in the session."""
+
     # Parse the auth code
     auth_code = request.data
     if provider == 'google':
@@ -641,10 +710,11 @@ def login(provider):
             db.session.add(user)
             db.session.commit()
 
+        session['user_id'] = user.id
+
         # Make token - not really using this for anything anymore (since I
         # couldn't figure out how to store it
         token = user.generate_auth_token(600)
-        # print("*** user token: " + str(token))
 #        request.headers['WWW-Authenticate'] = token
 #         user.token = token.decode('ascii')
 #         db.session.commit()
@@ -661,6 +731,11 @@ def login(provider):
 # the bulk of this code was borrowed from Udacity
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
+    """Logs out the user.
+
+    Currently only supports logging out from google.
+    Removes the user information from the session."""
+
     access_token = session.get('access_token')
     if access_token is None:
         response = \
@@ -668,8 +743,9 @@ def logout():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    # print('In gdisconnect auth token is %s', access_token)
-    # print('User name is: ' + session['username'])
+    logging.debug('In gdisconnect auth token is %s', access_token)
+    logging.debug('User name is: ' + session['username'])
+
     url = \
         'https://accounts.google.com/o/oauth2/revoke?token=%s' % \
         session['access_token']
@@ -682,6 +758,7 @@ def logout():
         del session['username']
         del session['email']
         del session['picture']
+        del session['user_id']
 
         flash('You have successfully logged out!', 'success')
 
@@ -703,4 +780,4 @@ if __name__ == '__main__':
             ) for x in range(32)
         )
     # app.run(host='0.0.0.0', port=8082)
-    app.run(host = '0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000)
