@@ -3,11 +3,12 @@ html, body {
      padding: 0;
      height: 100%;
      min-height: 100%;
-/*     background-image: url("../img/hero3_img.png");
-     background-position: center;
+     background-image: url("../img/hero3_img.png");
+     /*background-position: center;*/
+     background-position:0px 100px;
      background-repeat: no-repeat;
      background-size: cover;
-     position: relative;*/
+     position: relative;
      background-color: #000000;
      font-family: upgrade, sans-serif;
      font-style: normal;
@@ -40,10 +41,19 @@ html, body {
     font-family: courier, regular;
     font-size: 1em;
     margin-left: 5px;
+    color: rgba(255,255,255,.5);
 }
  #herofooterclick {
      text-decoration: none;
+     color: white;
+     font-weight: 600;
 }
+ .navbar-brand {
+    font-weight: 600;
+ }
+ .nav-link {
+    color: rgba(255,255,255,.5);
+ }
  #navTest {
      z-index: 2;
      padding-bottom: 16px;
@@ -69,10 +79,29 @@ html, body {
      transform: translate3d(0, -50%, 0);
      padding-left: 0;
      transition: all 0.5s;
+     /*TODO: this needs to be set for different view sizes to center the tagline*/
+/*     margin-left: 0px;*/
 }
 
  #headingRow {
      margin-right: 0px;
+ }
+
+ .dropdown-menu {
+    background-color: black;
+ }
+  .dropdown-menu:hover {
+    background-color: black;
+  }
+ .dropdown-item {
+    color: rgba(255,255,255,.5);
+    /*text-transform: uppercase;*/
+ }
+
+ .dropdown-item:hover {
+    color: rgba(255,255,255);
+    background-color: black;
+    /*text-transform: uppercase;*/
  }
  .container-fluid {
      margin-right: auto;
@@ -117,21 +146,50 @@ html, body {
  .searchItemLink {
      text-align: center;
 }
+ .searchItemLink a {
+    color: rgba(255,255,255,.75);
+ }
+ .searchItemLink a:hover {
+    color: rgba(255,255,255);
+    text-decoration: none;
+ }
+ .categoryHeading {
+     text-transform: uppercase;
+     font-weight: 600;
+ }
+
+ .categoryHeading h2 {
+    font-weight: 600;
+ }
  .categoryList {
      list-style-type: none;
      padding-left: 0px;
+     font-size: 1.25em;
 }
+ .listLink {
+    text-decoration: none;
+    color: rgba(255,255,255,.75);
+ }
+
+  .listLink:hover {
+    text-decoration: none;
+    color: rgba(255,255,255);
+  }
+  #createdBy {
+    font-size: .80em;
+    font-style: italic;
+  }
  .menu {
      float: left;
      visibility: hidden;
      position: relative;
-     left: -100%;
-     transition-duration: 1s;
-     -webkit-transition-duration: 1s;
+     top: -100;
+     transition-duration: .25s;
+     -webkit-transition-duration: .25s;
 }
  .menu.active {
      visibility: visible;
-     left: 0;
+     top: 0;
      transition-duration: 0.5s;
      -webkit-transition-duration: 0.5s;
 }
@@ -140,18 +198,24 @@ html, body {
      padding: 0;
      list-style-type: none;
 }
- .menu ul li {
+ .menu ul li a {
+     margin: 0.5em;
+     padding: 0;
+     display: inline-block;
+     text-transform: uppercase;
+     color: rgba(255, 255, 255, .5);
+}
+ .menu.active ul li a {
      margin: 0.5em;
      padding: 0;
      display: inline-block;
      text-transform: uppercase;
 }
- .menu.active ul li {
-     margin: 0.5em;
-     padding: 0;
-     display: inline-block;
-     text-transform: uppercase;
-}
+
+ .menu.active a:hover {
+    text-decoration: none;
+    color: rgba(255, 255, 255);
+ }
  .right {
      content: '';
      display: inline-block;
@@ -160,18 +224,18 @@ html, body {
      height: .5em;
      border-top: 0.1em solid #FFF;
      border-right: 0.1em solid #FFF;
-     transition-duration: 0.5s;
-     -webkit-transition-duration: 0.5s;
-     -moz-transform: rotate(45deg);
-     -webkit-transform: rotate(45deg);
-     transform: rotate(45deg);
+     transition-duration: 0.25s;
+     -webkit-transition-duration: 0.25s;
+     -moz-transform: rotate(-45deg);
+     -webkit-transform: rotate(-45deg);
+     transform: rotate(-45deg);
 }
  .right.active {
-     -moz-transform: rotate(-135deg);
-     -webkit-transform: rotate(-135deg);
-     transform: rotate(-135deg);
-     transition-duration: 0.5s;
-     -webkit-transition-duration: 0.5s;
+     -moz-transform: rotate(135deg);
+     -webkit-transform: rotate(135deg);
+     transform: rotate(135deg);
+     transition-duration: 0.25s;
+     -webkit-transition-duration: 0.25s;
 }
  #slide-menu {
      padding-left: 0px;
@@ -187,11 +251,19 @@ html, body {
 }
  .date-input-field {
      min-width: 70px;
-     max-width: 70px;
+     /*max-width: 70px;*/
 }
  #deleteLink {
      margin-top: 10px;
 }
+
+ #deleteLink a {
+    color: rgba(255,255,255,.5);
+ }
+ #deleteLink a:hover {
+    color: rgba(255,255,255);
+    text-decoration: none;
+ }
  #userIcon {
      border-radius: 50%;
      margin-right: 15px;
