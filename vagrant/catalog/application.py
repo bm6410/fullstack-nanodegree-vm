@@ -1,4 +1,6 @@
 """Application.py"""
+# TODO - clean up urls to match json endpoints
+
 from flask import render_template, url_for, redirect, request, flash, jsonify
 from flask_compress import Compress
 from werkzeug.utils import secure_filename
