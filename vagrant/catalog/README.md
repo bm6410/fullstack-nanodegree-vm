@@ -15,19 +15,10 @@ The project lives in the "catalog" directory
 
 ### Prerequisites
 
-In addition to the standard libraries, this application relies on the following packages:
-
-Werkzeug:
-* werkzeug.utils - file system tools
-* werkzeug.exceptions - for help with uploading poster images
+Requirements for running the code are found in requirements.txt.
 
 ```
-    pip install Werkzeug
-```
-
-PIL - for Image manipulation support:
-```    
-    $ pip install Pillow
+    pip  install  -r  requirements.txt
 ```
 
 ### Installing
