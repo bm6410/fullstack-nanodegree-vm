@@ -4,7 +4,6 @@ html, body {
      height: 100%;
      min-height: 100%;
      background-image: url("../img/hero3_img.png");
-     /*background-position: center;*/
      background-position:0px 100px;
      background-repeat: no-repeat;
      background-size: cover;
@@ -157,7 +156,6 @@ html, body {
      text-transform: uppercase;
      font-weight: 600;
  }
-
  .categoryHeading h2 {
     font-weight: 600;
  }
@@ -170,7 +168,6 @@ html, body {
     text-decoration: none;
     color: rgba(255,255,255,.75);
  }
-
   .listLink:hover {
     text-decoration: none;
     color: rgba(255,255,255);
@@ -183,13 +180,13 @@ html, body {
      float: left;
      visibility: hidden;
      position: relative;
-     top: -100;
-     transition-duration: .25s;
-     -webkit-transition-duration: .25s;
+     left: -100%;
+     transition-duration: 0.5s;
+     -webkit-transition-duration: 0.5s;
 }
  .menu.active {
      visibility: visible;
-     top: 0;
+     left: 0;
      transition-duration: 0.5s;
      -webkit-transition-duration: 0.5s;
 }
@@ -224,22 +221,25 @@ html, body {
      height: .5em;
      border-top: 0.1em solid #FFF;
      border-right: 0.1em solid #FFF;
-     transition-duration: 0.25s;
-     -webkit-transition-duration: 0.25s;
-     -moz-transform: rotate(-45deg);
-     -webkit-transform: rotate(-45deg);
-     transform: rotate(-45deg);
+     transition-duration: 0.5s;
+     -webkit-transition-duration: 0.5s;
+     -moz-transform: rotate(45deg);
+     -webkit-transform: rotate(45deg);
+     transform: rotate(45deg);
 }
  .right.active {
-     -moz-transform: rotate(135deg);
-     -webkit-transform: rotate(135deg);
-     transform: rotate(135deg);
-     transition-duration: 0.25s;
-     -webkit-transition-duration: 0.25s;
+     -moz-transform: rotate(-135deg);
+     -webkit-transform: rotate(-135deg);
+     transform: rotate(-135deg);
+     transition-duration: 0.5s;
+     -webkit-transition-duration: 0.5s;
 }
  #slide-menu {
      padding-left: 0px;
 }
+ .slide-menu-item {
+    display: inline;
+ }
  .entryForm {
      max-width: 50%;
 }
