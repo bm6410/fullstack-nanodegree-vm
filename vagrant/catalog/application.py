@@ -375,7 +375,8 @@ def show_poster_info(poster_id):
 
 
 # info for a single poster with the given ID in JSON format
-@app.route('/<int:poster_id>/JSON')
+@app.route('/posters/<int:poster_id>/JSON/v1/')
+@app.route('/posters/<int:poster_id>/json/v1/')
 def show_poster_info_json(poster_id):
     """Returns the info for a specific poster in JSON format.
 
@@ -389,7 +390,8 @@ def show_poster_info_json(poster_id):
 
 
 # shows all posters in the db in JSON format only
-@app.route('/searchResults/showAllPosters/JSON')
+@app.route('/posters/JSON/v1/')
+@app.route('/posters/json/v1/')
 def show_all_posters():
     """Returns all the posters in the database.
 
@@ -454,7 +456,8 @@ def show_search_results(category, category_id):
 
 # page to display search results for a category with the given ID
 # results in JSON
-@app.route('/searchResults/<string:category>/<int:category_id>/JSON')
+@app.route('/searchResults/<string:category>/<int:category_id>/JSON/v1/')
+@app.route('/searchResults/<string:category>/<int:category_id>/json/v1/')
 def show_search_results_json(category, category_id):
     """Returns the search results in JSON format.
 
@@ -487,7 +490,8 @@ def show_genres():
 
 
 # return genres in JSON format
-@app.route('/category/genre/JSON')
+@app.route('/genres/JSON/v1/')
+@app.route('/genres/json/v1/')
 def show_genres_json():
     """Returns the list of genres in JSON format."""
 
@@ -505,7 +509,8 @@ def show_directors():
 
 
 # return directors in JSON format
-@app.route('/category/director/JSON')
+@app.route('/directors/JSON/v1/')
+@app.route('/directors/json/v1/')
 def show_directors_json():
     """Returns the list of available directors in JSON format."""
 
@@ -524,7 +529,8 @@ def show_years():
 
 
 # return available years in JSON format
-@app.route('/category/year/JSON')
+@app.route('/years/JSON/v1/')
+@app.route('/years/json/v1/')
 def show_years_json():
     """Returns the available years in JSON format."""
 
