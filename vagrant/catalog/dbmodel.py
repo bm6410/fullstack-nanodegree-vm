@@ -1,6 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-import random, string
+import random
+import string
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from itsdangerous import(
@@ -20,6 +21,7 @@ secret_key = \
     ''.join(random.choice(string.ascii_uppercase + string.digits)
             for x in range(32))
 
+
 # class to store user/password info.  Borrowed from Udacity example code
 class User(db.Model):
     __tablename__ = 'user'
@@ -38,7 +40,7 @@ class User(db.Model):
 
     # Generate auth tokens - didn't end up using this
     def generate_auth_token(self, expiration=600):
-        s = Serializer(secret_key, expires_in = expiration)
+        s = Serializer(secret_key, expires_in=expiration)
         return s.dumps({'id': self.id})
 
     # Verify auth tokens here
@@ -48,10 +50,10 @@ class User(db.Model):
         try:
             data = s.loads(token)
         except SignatureExpired:
-            #Valid token, but expired
+            # Valid token, but expired
             return None
         except BadSignature:
-            #Invalid token
+            # Invalid token
             return None
         user_id = data['id']
         return user_id
@@ -61,14 +63,14 @@ class User(db.Model):
         return {
             'id': self.id,
             'username': self.name,
-            'picture' : self.picture,
-            'email' : self.email
+            'picture': self.picture,
+            'email': self.email
         }
 
 
 # Directors
 class Director(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
 
     @property
@@ -77,10 +79,11 @@ class Director(db.Model):
             'id': self.id,
             'name': self.name
         }
+
 
 # Genres
 class Genre(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
 
     @property
@@ -89,6 +92,7 @@ class Genre(db.Model):
             'id': self.id,
             'name': self.name
         }
+
 
 # A Poster object
 class Poster(db.Model):
@@ -108,15 +112,16 @@ class Poster(db.Model):
         """Return object data in easily serializeable format"""
         return {
             'id': self.id,
-            'title' : self.title,
-            'genre_id' : self.genre_id,
-            'genre' : self.genre.name,
-            'director_id' : self.director_id,
-            'director' : self.director.name,
-            'year' : self.year,
-            'poster_img' : self.poster_img,
-            'user_id' : self.user_id,
+            'title': self.title,
+            'genre_id': self.genre_id,
+            'genre': self.genre.name,
+            'director_id': self.director_id,
+            'director': self.director.name,
+            'year': self.year,
+            'poster_img': self.poster_img,
+            'user_id': self.user_id,
             'user_name': self.user.username
             }
+
 
 db.create_all()
