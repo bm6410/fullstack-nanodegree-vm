@@ -152,117 +152,132 @@ def edit_poster(poster_id):
     # ensure user is logged in first
     if 'username' not in session:
         return redirect('/clientOAuth')
+
     else:
-
-        try:
-            # get the object, then update it
-            poster_obj = Poster.query.filter_by(id=poster_id).first()
-
-            if request.method == 'POST':
-                if poster_obj is None:
-                    # we shouldn't get here, something bad happened
-                    flash('The poster could not be edited', 'error')
-                    return redirect(url_for("show_home_page"))
-                else:
-
-                    # start transaction in case we need to rollback
-                    db.session.begin_nested()
-
-                    poster_obj.title = request.form['title']
-                    poster_obj.genre_id = request.form['genre']
-                    poster_obj.year = request.form['year']
-
-                    old_director_id = poster_obj.director_id
-
-                    # if the director doesn't already exist, create
-                    director_name = request.form['director']
-                    director_obj = \
-                        Director.query.filter_by(name=director_name).first()
-                    if director_obj is None:
-                        new_director = Director(name=director_name)
-                        db.session.add(new_director)
-                        db.session.commit()
-                        director_obj = new_director
-
-                    poster_obj.director_id = director_obj.id
-
-                    # if the img field isn't blank and is different than we had
-                    # before, let's delete what is there and upload the new one
-                    old_file_name = poster_obj.poster_img
-                    new_file_name = request.form['poster_img_name']
-                    logging.debug("New file is " + new_file_name)
-                    if new_file_name != old_file_name:
-                        # we have a new file, let's upload
-
-                        # check if the post request has the file part
-                        if 'poster_img' not in request.files:
-                            flash('No file part')
-                            return "There is no file part here in the form"
-
-                        file = request.files['poster_img']
-
-                        # if user does not select file submit an empty part
-                        # without filename
-                        if file.filename == '':
-                            flash('No selected file')
-                            return "There is no file name here"
-
-                        try:
-                            filename = upload_poster_img(file)
-                        except UnsupportedMediaType as e:
-                            flash(e, 'error')
-                            return render_template(
-                                'editPoster.html',
-                                posterObj=poster_obj,
-                                genres=genres
-                            )
-
-                        poster_obj.poster_img = filename
-
-                        # if nobody else needs it, remove the old file
-                        old_poster_img = \
-                            Poster.query.filter_by(
-                                poster_img=old_file_name
-                            ).first()
-                        if old_poster_img is None:
-                            # safe to delete it...no one else needs it
-                            delete_poster_img(old_file_name)
-
-                    db.session.commit()
-
-                    # if that is the last film for the old director we just
-                    # deleted, let's delete the director, too
-                    if old_director_id != director_obj.id:
-                        poster_by_director = \
-                            Poster.query.filter_by(
-                                director_id=old_director_id).first()
-                        if not poster_by_director:
-                            old_director_obj = Director.query.filter_by(
-                                id=old_director_id).first()
-                            db.session.delete(old_director_obj)
-                            db.session.commit()
-
-                    # poster was edited successfully, let's show the
-                    # user a success message
-                    flash(
-                        '"' +
-                        request.form['title'] +
-                        '" edited successfully!',
-                        'success'
-                    )
-                    return redirect(
-                        url_for('show_poster_info', poster_id=poster_obj.id)
-                    )
-
-            else:
-                return render_template(
-                    'editPoster.html', posterObj=poster_obj, genres=genres
-                )
-
-        except Exception as e:
-            db.session.rollback()
-            flash(e, 'error')
+        # the wrong user is logged in
+        poster_obj = Poster.query.filter_by(id=poster_id).first()
+        if poster_obj.user_id != session['user_id']:
+            flash('You are not authorized to edit this item. ' +
+                  'Please edit one of your own items.', 'error')
             return redirect(url_for('show_poster_info', poster_id=poster_id))
+
+        else:
+
+            try:
+                # get the object, then update it
+                poster_obj = Poster.query.filter_by(id=poster_id).first()
+
+                if request.method == 'POST':
+                    if poster_obj is None:
+                        # we shouldn't get here, something bad happened
+                        flash('The poster could not be edited', 'error')
+                        return redirect(url_for("show_home_page"))
+                    else:
+
+                        # start transaction in case we need to rollback
+                        db.session.begin_nested()
+
+                        poster_obj.title = request.form['title']
+                        poster_obj.genre_id = request.form['genre']
+                        poster_obj.year = request.form['year']
+
+                        old_director_id = poster_obj.director_id
+
+                        # if the director doesn't already exist, create
+                        director_name = request.form['director']
+                        director_obj = \
+                            Director.query.filter_by(
+                                name=director_name).first()
+                        if director_obj is None:
+                            new_director = Director(name=director_name)
+                            db.session.add(new_director)
+                            db.session.commit()
+                            director_obj = new_director
+
+                        poster_obj.director_id = director_obj.id
+
+                        # if the img field isn't blank and is different
+                        # than we had before, let's delete what is there and
+                        # upload the new one
+                        old_file_name = poster_obj.poster_img
+                        new_file_name = request.form['poster_img_name']
+                        logging.debug("New file is " + new_file_name)
+                        if new_file_name != old_file_name:
+                            # we have a new file, let's upload
+
+                            # check if the post request has the file part
+                            if 'poster_img' not in request.files:
+                                flash('No file part')
+                                return "There is no file part here in the form"
+
+                            file = request.files['poster_img']
+
+                            # if user does not select file submit an empty part
+                            # without filename
+                            if file.filename == '':
+                                flash('No selected file')
+                                return "There is no file name here"
+
+                            try:
+                                filename = upload_poster_img(file)
+                            except UnsupportedMediaType as e:
+                                flash(e, 'error')
+                                return render_template(
+                                    'editPoster.html',
+                                    posterObj=poster_obj,
+                                    genres=genres
+                                )
+
+                            poster_obj.poster_img = filename
+
+                            # if nobody else needs it, remove the old file
+                            old_poster_img = \
+                                Poster.query.filter_by(
+                                    poster_img=old_file_name
+                                ).first()
+                            if old_poster_img is None:
+                                # safe to delete it...no one else needs it
+                                delete_poster_img(old_file_name)
+
+                        db.session.commit()
+
+                        # if that is the last film for the old director we just
+                        # deleted, let's delete the director, too
+                        if old_director_id != director_obj.id:
+                            poster_by_director = \
+                                Poster.query.filter_by(
+                                    director_id=old_director_id).first()
+                            if not poster_by_director:
+                                old_director_obj = Director.query.filter_by(
+                                    id=old_director_id).first()
+                                db.session.delete(old_director_obj)
+                                db.session.commit()
+
+                        # poster was edited successfully, let's show the
+                        # user a success message
+                        flash(
+                            '"' +
+                            request.form['title'] +
+                            '" edited successfully!',
+                            'success'
+                        )
+                        return redirect(
+                            url_for(
+                                'show_poster_info', poster_id=poster_obj.id
+                            )
+                        )
+
+                else:
+                    return render_template(
+                        'editPoster.html', posterObj=poster_obj, genres=genres
+                    )
+
+            except Exception as e:
+                db.session.rollback()
+                flash(e, 'error')
+                return redirect(
+                    url_for('show_poster_info', poster_id=poster_id)
+                )
 
 
 # delete poster page, protected behind login
@@ -276,61 +291,71 @@ def delete_poster(poster_id):
     # ensure user is logged in first
     if 'username' not in session:
         return redirect('/clientOAuth')
+
     else:
+        # the wrong user is logged in
+        poster_obj = Poster.query.filter_by(id=poster_id).first()
+        if poster_obj.user_id != session['user_id']:
+            flash('You are not authorized to delete this item. ' +
+                  'Please delete one or your own items.', 'error')
+            return redirect(url_for('show_poster_info', poster_id=poster_id))
 
-        try:
-            # user is logged in - get the object from the db, delete it,
-            # then clean up director and image info
-            poster_obj = Poster.query.filter_by(id=poster_id).first()
-            if poster_obj is None:
-                # we shouldn't get here, but if we do, something bad happened
-                flash('The poster could not be deleted', 'error')
-                return redirect(url_for("show_home_page"))
+        else:
 
-            elif request.method == 'POST':
+            try:
+                # user is logged in - get the object from the db, delete it,
+                # then clean up director and image info
+                poster_obj = Poster.query.filter_by(id=poster_id).first()
+                if poster_obj is None:
+                    # we shouldn't get here, but if we do, something bad
+                    # happened
+                    flash('The poster could not be deleted', 'error')
+                    return redirect(url_for("show_home_page"))
 
-                # start a transaction, in case we have to rollback
-                db.session.begin_nested()
+                elif request.method == 'POST':
 
-                # get the object, then delete it
-                director_id = poster_obj.director_id
-                db.session.delete(poster_obj)
+                    # start a transaction, in case we have to rollback
+                    db.session.begin_nested()
 
-                # if that is the last film for the particular director we just
-                # deleted, let's delete the director, too
-                poster_by_director = Poster.query.filter_by(
-                    director_id=director_id).first()
-                if not poster_by_director:
-                    director_obj = Director.query.filter_by(
-                        id=director_id).first()
-                    db.session.delete(director_obj)
+                    # get the object, then delete it
+                    director_id = poster_obj.director_id
+                    db.session.delete(poster_obj)
 
-                # if nobody else needs it, remove the old poster file
-                old_poster_img = Poster.query.filter_by(
-                    poster_img=poster_obj.poster_img).first()
-                if old_poster_img is None:
-                    # safe to delete it...no one else needs it
-                    delete_poster_img(poster_obj.poster_img)
+                    # if that is the last film for the particular director
+                    # we just deleted, let's delete the director, too
+                    poster_by_director = Poster.query.filter_by(
+                        director_id=director_id).first()
+                    if not poster_by_director:
+                        director_obj = Director.query.filter_by(
+                            id=director_id).first()
+                        db.session.delete(director_obj)
 
-                db.session.commit()
+                    # if nobody else needs it, remove the old poster file
+                    old_poster_img = Poster.query.filter_by(
+                        poster_img=poster_obj.poster_img).first()
+                    if old_poster_img is None:
+                        # safe to delete it...no one else needs it
+                        delete_poster_img(poster_obj.poster_img)
 
-                flash(
-                    'Successfully deleted "' +
-                    poster_obj.title +
-                    '"', 'success'
-                )
-                return render_template("index.html", genres=genres)
-            else:
-                return render_template(
-                    'deleteposter.html',
-                    poster_id=poster_id,
-                    poster_title=poster_obj.title
-                )
+                    db.session.commit()
 
-        except Exception as e:
-            db.session.rollback()
-            flash(e, 'error')
-            return redirect_url(url_for(edit_poster, poster_id=poster_id))
+                    flash(
+                        'Successfully deleted "' +
+                        poster_obj.title +
+                        '"', 'success'
+                    )
+                    return render_template("index.html", genres=genres)
+                else:
+                    return render_template(
+                        'deleteposter.html',
+                        poster_id=poster_id,
+                        poster_title=poster_obj.title
+                    )
+
+            except Exception as e:
+                db.session.rollback()
+                flash(e, 'error')
+                return redirect_url(url_for(edit_poster, poster_id=poster_id))
 
 
 # info for a single poster with the given ID
