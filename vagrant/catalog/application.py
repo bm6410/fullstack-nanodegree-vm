@@ -816,5 +816,5 @@ if __name__ == '__main__':
                 string.ascii_uppercase + string.digits
             ) for x in range(32)
         )
-    # app.run(host='0.0.0.0', port=8082)
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8082)
+    # app.run(host='0.0.0.0', port=8000)
