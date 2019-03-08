@@ -4,7 +4,7 @@ html, body {
      height: 100%;
      min-height: 100%;
      background-image: url("../img/hero3_img.png");
-     background-position:0px 100px;
+     background-position:-100px 100px;
      background-repeat: no-repeat;
      background-size: cover;
      position: relative;
@@ -45,7 +45,30 @@ html, body {
  #herofooterclick {
      text-decoration: none;
      color: white;
+     font-size: 2em;
      font-weight: 600;
+}
+ #herofooterclick a:hover {
+     text-decoration: none;
+     color: white;
+     font-weight: 600;
+}
+ #herofooterclick a {
+     text-decoration: none;
+     color: white;
+     font-weight: 600;
+ }
+ #herofooterclick a::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .255em;
+    vertical-align: .255em;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
 }
  .navbar-brand {
     font-weight: 600;
@@ -62,13 +85,15 @@ html, body {
  }
  #heroWrapper {
      min-height: 100%;
-     padding-left: 0;
-     padding-right: 0;
+/*     padding-left: 0;
+     padding-right: 0;*/
      position: absolute;
-     top: 0;
+     top: 40%;
      width: 100%;
      z-index: 1;
      height: calc( 100vh - 110px );
+          -webkit-transform: translate3d(0, 20%, 0);
+     transform: translate3d(0, 20%, 0);
      transition: opacity 1s, z-index 2s;
 }
  #hero .tagline {
@@ -82,9 +107,9 @@ html, body {
 /*     margin-left: 0px;*/
 }
 
- #headingRow {
+/* #headingRow {
      margin-right: 0px;
- }
+ }*/
 
  .dropdown-menu {
     background-color: black;
@@ -213,6 +238,29 @@ html, body {
     text-decoration: none;
     color: rgba(255, 255, 255);
  }
+  .custom_menu ul {
+     margin: 0;
+     padding: 0;
+     list-style-type: none;
+}
+ .custom_menu ul li a {
+     margin: 0.5em;
+     padding: 0;
+     display: inline-block;
+     text-transform: uppercase;
+     color: rgba(255, 255, 255, .5);
+}
+ .custom_menu.active ul li a {
+     margin: 0.5em;
+     padding: 0;
+     display: inline-block;
+     text-transform: uppercase;
+}
+
+ .custom_menu.active a:hover {
+    text-decoration: none;
+    color: rgba(255, 255, 255);
+ }
  .right {
      content: '';
      display: inline-block;
@@ -237,8 +285,19 @@ html, body {
  #slide-menu {
      padding-left: 0px;
 }
+ #slide-menu-card {
+     background-color: rgba(0, 0, 0, .5);
+     padding: 0px;
+ }
  .slide-menu-item {
-    display: inline;
+    /*display: inline;*/
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .5);
+ }
+ .slide-menu-item a:hover {
+    text-decoration: none;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255);
  }
  .entryForm {
      max-width: 50%;
@@ -301,7 +360,7 @@ html, body {
          margin-left: 0.25em;
     }
      #slide-menu {
-         padding-left: 15px;
+         padding-left: 0px;
     }
      .form-buttons {
          text-align: center;
@@ -334,8 +393,11 @@ html, body {
         margin-left: 0px;
     }
      .herofooter {
-         font-size: 1.6rem;
+         font-size: 1.5em;
     }
+     #herofooterclick {
+        font-size: 1.5em;
+     }
      .heading-text {
          font-size: 1em;
     }
