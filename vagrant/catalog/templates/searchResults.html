@@ -11,7 +11,7 @@
 	</div>
 	<div class="row mt-4 justify-content-start">
         {% for poster in posters %}
-		<div class="col">
+		<div class="col-xs-6 col-sm-4 col-md-3">
             <div class="row align-items-center">
                 <div class="col-sm searchItem searchItemImg">
                     <a href="{{url_for('show_poster_info', poster_id=poster.id)}}">
