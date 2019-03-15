@@ -1,0 +1,3 @@
+release: python dbmodel.py
+release: python populatedb.py
+web: python application.wsgi
