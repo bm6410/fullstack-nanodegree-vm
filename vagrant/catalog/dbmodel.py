@@ -23,7 +23,7 @@ db = SQLAlchemy(app)
 # Random key used to sign tokens
 secret_key = \
     ''.join(random.choice(string.ascii_uppercase + string.digits)
-            for x in range(32))git
+            for x in range(32))
 
 
 # class to store user/password info.  Borrowed from Udacity example code
