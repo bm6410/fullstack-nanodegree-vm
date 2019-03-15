@@ -9,7 +9,7 @@
 			<div class="col-sm text-center">
 		    	<img class="img-fluid posterImg" alt='{{posterObj.title}}' src="{{ url_for('static', filename='img/' + posterObj.poster_img) }}">
 		  	</div>
-			<div class="col-sm align-self-center" style="background-color:black; padding: 15px;">
+			<div class="col-sm align-self-center" id="posterInfo">
 				<div class="row">
 					<div class="col text-center categoryHeading">
 						<h2>{{posterObj.title}}  ({{posterObj.year}})</h2>

@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Stick and Burn{% endblock %}
+{% block content %}
+
+<div id="page">
+	<div class="container-fluid" id="heroWrapper">
+		<div class="container" id="hero">
+			<div class="container">
+				<div class="row tagline">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+						<div class="row" id="headingRow">
+							<div class="col">
+								<h1 class="hero-text">Welcome to Stick and Burn</h1>
+								<div id="definition"><u>Stick and Burn</u> [stik and burn] <i>noun</i>:<p>
+								1.&nbsp;&nbsp;the act of film getting stuck in a projector gate and melting on screen for all to see</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 text-nowrap" style="padding-right: 0px;">
+								<h2 class="herofooter">
+									<a href="#" class="js-nav" id="herofooterclick">Browse Posters:
+									<span class="right"></span>
+									</a>
+								</h2>
+							</div>
+							<div class="col-xs-16 col-sm-6 col-md-12 col-lg-6" id="slide-menu">
+								<div class="nav-wrap">
+									<nav class="menu">
+										<ul>
+											<!--TODO: maybe create an 'all' option-->
+											<li class="slide-menu-item"><a href="{{url_for('show_years')}}">Year</a></li>
+											<li class="slide-menu-item"><a href="{{url_for('show_genres')}}">Genre</a></li>
+											<li class="slide-menu-item"><a href="{{url_for('show_directors')}}">Director</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	// function to slide out the menu for choosing categories
+	$('.js-nav').click(function(){
+		$('.menu').toggleClass('active');
+		$('.right').toggleClass('active');
+	});
+</script>
+
+{% endblock %}

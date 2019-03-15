@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+<title>Stick and Burn - Login</title>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name=author content="Bijan Marashi">
+<meta name=description content="Item Catalog site - built for Udacity Fullstack Web Developer course">
+<link rel=stylesheet href="/static/css/bootstrap.min.css">
+<link rel=stylesheet href="/static/css/styles.css">
+<script src="/static/js/jquery-3.3.1.min.js"></script>
+<script src="/static/js/all.min.js"></script>
+<script src="https://apis.google.com/js/platform.js?onload=start"></script>
+<script>gapi.load('auth2',function(){auth2=gapi.auth2.init({client_id:'1027301706801-4npfvv2921jdgcrs7ltdgg9pnq9els80.apps.googleusercontent.com',});});</script>
+</head>
+<body class=fade-out>
+<nav class="navbar navbar-expand-lg navbar-dark mt-2" id=navTest>
+<a class=navbar-brand href="/">Stick and Burn</a>
+<button class=navbar-toggler type=button data-toggle=collapse data-target="#navbarTogglerDemo02" aria-controls=navbarTogglerDemo02 aria-expanded=false aria-label="Toggle navigation">
+<span class=navbar-toggler-icon></span>
+</button>
+<div class="collapse navbar-collapse" id=navbarTogglerDemo02>
+<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+<li class=nav-item>
+<a class=nav-link href="/new">Add New Poster</a>
+</li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" data-toggle=dropdown href="#" role=button aria-haspopup=true aria-expanded=false>Browse Posters by:</a>
+<div class=dropdown-menu>
+<a class=dropdown-item href="/category/year">Year</a>
+<a class=dropdown-item href="/category/genre">Genre</a>
+<a class=dropdown-item href="/category/director">Director</a>
+</div>
+</li>
+</ul>
+<form class="form-inline my-2 my-lg-0" action="/clientOAuth">
+<button class="btn btn-outline-light my-2 my-sm-0" type=submit> Login </button>
+</form>
+</div>
+</nav>
+<div id=content style="margin: 15px; padding: 10px;">
+<div id=result></div>
+<div class=row>
+<div class=col>
+<h1>Login with OAuth 2.0</h1>
+</div>
+</div>
+<div class=row>
+<div class=col>
+<h3>To modify the poster list, please login with Google.</h3>
+</div>
+</div>
+<div class="row ml-1 mt-2">
+<div id=my-signin2></div>
+</div>
+<script>function onSuccess(googleUser){console.log('Logged in as: '+googleUser.getBasicProfile().getName());}
+function onFailure(error){console.log(error);}
+function renderButton(){gapi.signin2.render('my-signin2',{'scope':'profile email','width':240,'height':50,'longtitle':true,'theme':'dark',});}</script>
+<script>$('#my-signin2').click(function(){auth2.grantOfflineAccess({'redirect_uri':'postmessage'}).then(signInCallback);});</script>
+<script>function signInCallback(json){console.log(json);authResult=json;if(authResult['code']){$('#my-signin2').attr('style','display: none');$.ajax({type:'POST',url:'/oauth/google',processData:false,data:authResult['code'],contentType:'application/octet-stream; charset=utf-8',success:function(result){if(result){window.location.replace('http://localhost:8082/');}else if(authResult['error']){$('#result').html('Unable to log in to Google!</br>')
+console.log('There was an error: '+authResult['error']);}else{$('#result').html('Failed to make a server-side call. Check your configuration and console.');}}});}}</script>
+<script>var auth2;gapi.load('auth2',function(){auth2=gapi.auth2.init();});function signOut(){auth2.signOut().then(function(){$.ajax({type:'POST',url:'/logout',processData:false,data:'',contentType:'application/octet-stream; charset=utf-8',success:function(result){if(result){window.location.replace("/");}else if(authResult['error']){console.log('There was an error: '+authResult['error']);}else{$('#result').html('Failed to make a server-side call. Check your configuration and console.');}}});});}</script>
+<script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+</div>
+<script src="/static/js/bootstrap.min.js"></script>
+<script>$(function(){$('body').removeClass('fade-out');});</script>
+</body>
+</html>
