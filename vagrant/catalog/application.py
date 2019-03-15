@@ -156,6 +156,8 @@ def edit_poster(poster_id):
         return redirect('/clientOAuth')
 
     else:
+        logging.debug("User is logged in - in edit")
+
         # the wrong user is logged in
         poster_obj = Poster.query.filter_by(id=poster_id).first()
         if poster_obj.user_id != session['user_id']:
@@ -270,6 +272,8 @@ def edit_poster(poster_id):
                         )
 
                 else:
+                    logging.debug("Returning edit form")
+
                     return render_template(
                         'editPoster.html', posterObj=poster_obj, genres=genres
                     )
@@ -434,7 +438,7 @@ def show_search_results(category, category_id):
     else:
         posters = \
             Poster.query.order_by(Poster.title).filter_by(
-                year=category_id).all()
+                year=str(category_id)).all()
         title = "Years"
         search_heading = category_id
 
@@ -526,7 +530,7 @@ def show_years():
     """Displays the page with the available years."""
 
     session['redirect_route'] = request.path
-    unique_years = Poster.query.distinct(Poster.year).group_by(Poster.year)
+    unique_years = Poster.query.distinct(Poster.year).group_by(Poster.year, Poster.id)
     return render_template('years.html', years=unique_years)
 
 
@@ -816,5 +820,9 @@ if __name__ == '__main__':
                 string.ascii_uppercase + string.digits
             ) for x in range(32)
         )
-    app.run(host='0.0.0.0', port=8082)
-    # app.run(host='0.0.0.0', port=8000)
+
+    port = int(os.environ.get("PORT", 8082))
+    app.run(
+        host="0.0.0.0",
+        port=port,
+    )
