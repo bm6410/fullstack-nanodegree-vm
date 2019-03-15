@@ -149,6 +149,10 @@ html, body {
 /*     max-width: 540px;
      max-height: 816px;*/
 }
+ #posterInfo {
+    background-color: rgba(0, 0, 0, .5);
+    padding: 15px;
+ }
  .img-thumbnail {
 /*     min-width: 200px;
      max-height: 325px;*/
