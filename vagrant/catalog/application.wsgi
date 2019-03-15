@@ -94,7 +94,7 @@ def add_new_poster():
 
                 # start a savepoint here, so we can rollback all of it if
                 # this fails
-                db.session.begin_nested()
+                # db.session.begin_nested()
 
                 # if the director doesn't already exist, add to the db, then
                 # get the id
@@ -179,7 +179,7 @@ def edit_poster(poster_id):
                     else:
 
                         # start transaction in case we need to rollback
-                        db.session.begin_nested()
+                        # db.session.begin_nested()
 
                         poster_obj.title = request.form['title']
                         poster_obj.genre_id = request.form['genre']
@@ -243,7 +243,11 @@ def edit_poster(poster_id):
                                 # safe to delete it...no one else needs it
                                 delete_poster_img(old_file_name)
 
+                        logging.debug(
+                            "Year before commit - " + poster_obj.year)
                         db.session.commit()
+                        logging.debug(
+                            "Year after commit - " + poster_obj.year)
 
                         # if that is the last film for the old director we just
                         # deleted, let's delete the director, too
@@ -321,7 +325,7 @@ def delete_poster(poster_id):
                 elif request.method == 'POST':
 
                     # start a transaction, in case we have to rollback
-                    db.session.begin_nested()
+                    # db.session.begin_nested()
 
                     # get the object, then delete it
                     director_id = poster_obj.director_id
@@ -822,8 +826,8 @@ if __name__ == '__main__':
                 string.ascii_uppercase + string.digits
             ) for x in range(32)
         )
-    #app.run(host='0.0.0.0', port=8082)
-    #app.run()
+    # app.run(host='0.0.0.0', port=8082)
+    # app.run()
 
     port = int(os.environ.get("PORT", 8082))
     app.run(

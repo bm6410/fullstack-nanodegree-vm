@@ -14,10 +14,14 @@ from itsdangerous import(
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posters.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://bijan:myHanh1974@127.0.0.1/posters'
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+    'postgresql://bijan:myHanh1974@127.0.0.1/posters'
 # aws db string
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@127.0.0.1/posters'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://wdsqrknzpwvcjx:dfb9661f6d407f1b5eb42fef5f9ca867da71d3303855a2f1e41652a7df67d396@ec2-50-19-109-120.compute-1.amazonaws.com:5432/db3p8pc80o93lj'
+# app.config['SQLALCHEMY_DATABASE_URI'] =
+# 'postgresql://postgres@127.0.0.1/posters'
+# heroku db string
+# app.config['SQLALCHEMY_DATABASE_URI'] =
+# 'postgres://wdsqrknzpwvcjx:dfb9661f6d407f1b5eb42fef5f9ca867da71d3303855a2f1e41652a7df67d396@ec2-50-19-109-120.compute-1.amazonaws.com:5432/db3p8pc80o93lj'
 db = SQLAlchemy(app)
 
 # Random key used to sign tokens
