@@ -338,6 +338,10 @@ html, body {
          font-weight: 600;
          font-size: 3.50em;
     }
+
+    #definition {
+        font-size: .80em;
+    }
  }
  @media (max-width: 768px) {
      .hero-text {
