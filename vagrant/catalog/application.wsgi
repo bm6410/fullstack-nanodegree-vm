@@ -24,8 +24,9 @@ auth = HTTPTokenAuth('Token')
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/img')
-CLIENT_ID = \
-    json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
+json_url = os.path.join(PROJECT_ROOT, 'client_secrets.json')
+CLIENT_ID = json.load(open(json_url))['web']['client_id']
 # compression for site resources - method borrowed from here:
 # https://damyanon.net/post/flask-series-optimizations/
 COMPRESS_MIMETYPES = [
@@ -45,7 +46,7 @@ Compress(app)
 db.init_app(app)
 
 # let's just get the genres one time and use them everywhere
-genres = list(db.session.query(Genre).all())
+genres = db.session.query(Genre).all()
 
 
 # display the home page
@@ -243,11 +244,7 @@ def edit_poster(poster_id):
                                 # safe to delete it...no one else needs it
                                 delete_poster_img(old_file_name)
 
-                        logging.debug(
-                            "Year before commit - " + poster_obj.year)
                         db.session.commit()
-                        logging.debug(
-                            "Year after commit - " + poster_obj.year)
 
                         # if that is the last film for the old director we just
                         # deleted, let's delete the director, too
@@ -279,7 +276,7 @@ def edit_poster(poster_id):
                     logging.debug("Returning edit form")
 
                     return render_template(
-                        'editPoster.html', posterObj=poster_obj, genres=genres
+                        'editposter.html', posterObj=poster_obj, genres=genres
                     )
 
             except Exception as e:
@@ -365,6 +362,7 @@ def delete_poster(poster_id):
             except Exception as e:
                 db.session.rollback()
                 flash(e, 'error')
+                logging.debug('Exception thrown in delete_poster(): %s', e)
                 return redirect_url(url_for(edit_poster, poster_id=poster_id))
 
 
@@ -611,12 +609,15 @@ def delete_poster_img(filename):
     Takes the filename as an argument.
     Will also remove the associated thumbnail image, if it exists."""
 
-    full_filename = app.config['UPLOAD_FOLDER'] + "/" + filename
+    full_filename = str(app.config['UPLOAD_FOLDER'] + "/" + filename)
+    logging.debug('Full filename is  %s', full_filename)
+
     if os.path.exists(full_filename):
         os.remove(full_filename)
 
         # delete the thumbnail, too
         path_to_thumbnail = str.rsplit(full_filename, '.')[0] + ".thumbnail"
+        logging.debug('PATH TO THUMBNAIL - %s', path_to_thumbnail)
         os.remove(path_to_thumbnail)
     else:
         raise Exception(full_filename + " does not exist.")
@@ -674,7 +675,7 @@ def login(provider):
         try:
             # Upgrade the authorization code into a credentials object
             oauth_flow = \
-                flow_from_clientsecrets('client_secrets.json', scope='')
+                flow_from_clientsecrets(json_url, scope='')
             oauth_flow.redirect_uri = 'postmessage'
             credentials = oauth_flow.step2_exchange(auth_code)
         except FlowExchangeError:
